@@ -1,27 +1,30 @@
-'use client';
+"use client";
 
-import { ChatRequestOptions, Message } from 'ai';
-import { Button } from './ui/button';
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
-import { Textarea } from './ui/textarea';
-import { UseChatHelpers } from '@ai-sdk/react';
+import type { UIMessage } from "ai";
+import { Button } from "./ui/button";
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
+import { Textarea } from "./ui/textarea";
+import { UseChatHelpers } from "@ai-sdk/react";
+import { getTextFromMessage } from "@/lib/utils";
 
 export type MessageEditorProps = {
-  message: Message;
-  setMode: Dispatch<SetStateAction<'view' | 'edit'>>;
-  setMessages: UseChatHelpers['setMessages'];
-  reload: UseChatHelpers['reload'];
+  message: UIMessage;
+  setMode: Dispatch<SetStateAction<"view" | "edit">>;
+  setMessages: UseChatHelpers<UIMessage>["setMessages"];
+  regenerate: UseChatHelpers<UIMessage>["regenerate"];
 };
 
 export function MessageEditor({
   message,
   setMode,
   setMessages,
-  reload,
+  regenerate,
 }: MessageEditorProps) {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-  const [draftContent, setDraftContent] = useState<string>(message.content);
+  const [draftContent, setDraftContent] = useState<string>(
+    getTextFromMessage(message)
+  );
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
@@ -32,7 +35,7 @@ export function MessageEditor({
 
   const adjustHeight = () => {
     if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = "auto";
       textareaRef.current.style.height = `${textareaRef.current.scrollHeight + 2}px`;
     }
   };
@@ -57,7 +60,7 @@ export function MessageEditor({
           variant="outline"
           className="h-fit py-2 px-3"
           onClick={() => {
-            setMode('view');
+            setMode("view");
           }}
         >
           Cancel
@@ -70,15 +73,13 @@ export function MessageEditor({
           onClick={async () => {
             setIsSubmitting(true);
 
-            // @ts-expect-error todo: support UIMessage in setMessages
             setMessages((messages) => {
               const index = messages.findIndex((m) => m.id === message.id);
 
               if (index !== -1) {
-                const updatedMessage = {
+                const updatedMessage: UIMessage = {
                   ...message,
-                  content: draftContent,
-                  parts: [{ type: 'text', text: draftContent }],
+                  parts: [{ type: "text", text: draftContent }],
                 };
 
                 return [...messages.slice(0, index), updatedMessage];
@@ -87,11 +88,11 @@ export function MessageEditor({
               return messages;
             });
 
-            setMode('view');
-            reload();
+            setMode("view");
+            regenerate();
           }}
         >
-          {isSubmitting ? 'Sending...' : 'Send'}
+          {isSubmitting ? "Sending..." : "Send"}
         </Button>
       </div>
     </div>

@@ -12,10 +12,10 @@ import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 
 interface MessagesProps {
   chatId: string;
-  status: UseChatHelpers["status"];
+  status: UseChatHelpers<UIMessage>["status"];
   messages: Array<UIMessage>;
-  setMessages: UseChatHelpers["setMessages"];
-  reload: UseChatHelpers["reload"];
+  setMessages: UseChatHelpers<UIMessage>["setMessages"];
+  regenerate: UseChatHelpers<UIMessage>["regenerate"];
   authError: string | null;
 }
 
@@ -24,7 +24,7 @@ function PureMessages({
   status,
   messages,
   setMessages,
-  reload,
+  regenerate,
   authError,
 }: MessagesProps) {
   const {
@@ -55,7 +55,7 @@ function PureMessages({
           message={message}
           isLoading={status === "streaming" && messages.length - 1 === index}
           setMessages={setMessages}
-          reload={reload}
+          regenerate={regenerate}
           requiresScrollPadding={
             hasSentMessage && index === messages.length - 1
           }

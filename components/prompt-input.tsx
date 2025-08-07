@@ -1,6 +1,13 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import React, { Dispatch, SetStateAction, useCallback, useRef } from "react";
+import React, {
+  ChangeEvent,
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useRef,
+  useState,
+} from "react";
 import { Paperclip } from "lucide-react";
 import {
   DropdownMenu,
@@ -18,72 +25,136 @@ import { HiOutlineViewGridAdd } from "react-icons/hi";
 import { FaGithub, FaGoogleDrive } from "react-icons/fa";
 import { TbCube, TbUserSquare } from "react-icons/tb";
 import { UseChatHelpers } from "@ai-sdk/react";
-import { Attachment, UIMessage } from "ai";
+import { UIMessage } from "ai";
 import { toast } from "sonner";
 import { useWindowSize } from "usehooks-ts";
 import { useRouter } from "next/navigation";
 import { LinearAuth } from "./linear-auth";
+import { Attachment } from "@/lib/types";
 
 export function PromptInput({
-  projectId,
-  input,
-  setInput,
+  chatId,
   status,
   stop,
   attachments,
   setAttachments,
   messages,
   setMessages,
-  append,
-  handleSubmit,
+  sendMessage,
   className,
   isAtBottom = false,
 }: {
-  projectId: string;
-  input: UseChatHelpers["input"];
-  setInput: UseChatHelpers["setInput"];
-  status: UseChatHelpers["status"];
+  chatId: string;
+  status: UseChatHelpers<UIMessage>["status"];
   stop: () => void;
   attachments: Array<Attachment>;
   setAttachments: Dispatch<SetStateAction<Array<Attachment>>>;
   messages: Array<UIMessage>;
-  setMessages: UseChatHelpers["setMessages"];
-  append: UseChatHelpers["append"];
-  handleSubmit: UseChatHelpers["handleSubmit"];
+  setMessages: UseChatHelpers<UIMessage>["setMessages"];
+  sendMessage: UseChatHelpers<UIMessage>["sendMessage"];
   className?: string;
   isAtBottom?: boolean;
 }) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { width } = useWindowSize();
   const router = useRouter();
+  const [input, setInput] = useState<string>("");
+
   const handleInput = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInput(event.target.value);
   };
 
   const submitForm = useCallback(() => {
-    if (messages.length === 0) router.replace(`/projects/${projectId}`);
+    router.replace(`/projects/${chatId}`);
 
-    handleSubmit(undefined, {
-      experimental_attachments: attachments,
-      data: {
-        id: projectId,
-      }
+    sendMessage({
+      role: "user",
+      parts: [
+        ...attachments.map((attachment) => ({
+          type: "file" as const,
+          url: attachment.url,
+          name: attachment.name,
+          mediaType: attachment.contentType,
+        })),
+        {
+          type: "text",
+          text: input,
+        },
+      ],
     });
 
     setAttachments([]);
+    setInput("");
 
     if (width && width > 768) {
       textareaRef.current?.focus();
     }
   }, [
+    input,
+    setInput,
     attachments,
-    handleSubmit,
+    sendMessage,
     setAttachments,
-    messages,
     width,
-    projectId,
+    chatId,
     router,
   ]);
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploadQueue, setUploadQueue] = useState<Array<string>>([]);
+
+  const uploadFile = async (file: File) => {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const response = await fetch("/api/files/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const { url, pathname, contentType } = data;
+
+        return {
+          url,
+          name: pathname,
+          contentType: contentType,
+        };
+      }
+      const { error } = await response.json();
+      toast.error(error);
+    } catch (error) {
+      toast.error("Failed to upload file, please try again!");
+    }
+  };
+
+  const handleFileChange = useCallback(
+    async (event: ChangeEvent<HTMLInputElement>) => {
+      const files = Array.from(event.target.files || []);
+
+      setUploadQueue(files.map((file) => file.name));
+
+      try {
+        const uploadPromises = files.map((file) => uploadFile(file));
+        const uploadedAttachments = await Promise.all(uploadPromises);
+        const successfullyUploadedAttachments = uploadedAttachments.filter(
+          (attachment) => attachment !== undefined
+        );
+
+        setAttachments((currentAttachments) => [
+          ...currentAttachments,
+          ...successfullyUploadedAttachments,
+        ]);
+      } catch (error) {
+        console.error("Error uploading files!", error);
+      } finally {
+        setUploadQueue([]);
+      }
+    },
+    [setAttachments]
+  );
 
   return (
     <div
@@ -105,9 +176,6 @@ export function PromptInput({
             className
           )}
         >
-          {/* <button className="absolute top-4 right-4 hover:bg-neutral-200/50 rounded-sm p-1 transition-colors hover:[&>svg]:text-neutral-900">
-          <IoIosResize className="size-4 text-neutral-700" strokeWidth={2.5} />
-        </button> */}
           <Textarea
             data-testid="multimodal-input"
             ref={textareaRef}
@@ -208,7 +276,16 @@ export function PromptInput({
           </div>
         </div>
         <div className="flex items-center justify-between p-3">
-          <Button variant="ghost" size="icon" className="size-7 px-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="size-7 px-2"
+            onClick={(event) => {
+              event.preventDefault();
+              fileInputRef.current?.click();
+            }}
+            disabled={status !== 'ready'}
+          >
             <Paperclip className="size-3.5 text-neutral-900" />
           </Button>
           <Button
