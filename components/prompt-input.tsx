@@ -65,23 +65,26 @@ export function PromptInput({
   };
 
   const submitForm = useCallback(() => {
-    router.replace(`/projects/${chatId}`);
+    router.replace(`/chat/${chatId}`);
 
-    sendMessage({
-      role: "user",
-      parts: [
-        ...attachments.map((attachment) => ({
-          type: "file" as const,
-          url: attachment.url,
-          name: attachment.name,
-          mediaType: attachment.contentType,
-        })),
-        {
-          type: "text",
-          text: input,
-        },
-      ],
-    });
+    sendMessage(
+      {
+        role: "user",
+        parts: [
+          ...attachments.map((attachment) => ({
+            type: "file" as const,
+            url: attachment.url,
+            name: attachment.name,
+            mediaType: attachment.contentType,
+          })),
+          {
+            type: "text",
+            text: input,
+          },
+        ],
+      },
+      { body: { threadId: chatId } }
+    );
 
     setAttachments([]);
     setInput("");
@@ -284,7 +287,7 @@ export function PromptInput({
               event.preventDefault();
               fileInputRef.current?.click();
             }}
-            disabled={status !== 'ready'}
+            disabled={status !== "ready"}
           >
             <Paperclip className="size-3.5 text-neutral-900" />
           </Button>

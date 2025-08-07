@@ -100,41 +100,12 @@ export function useAuth() {
     }
   };
 
-  const googleLogin = async () => {
-    try {
-      const { data, error } = await authClient.signIn.social({
-        provider: "google",
-      });
-
-      if (error) {
-        return { success: false, error: error.message };
-      }
-
-      // Handle redirect for OAuth
-      if (data && 'url' in data && data.url) {
-        window.location.href = data.url;
-        return { success: true };
-      }
-
-      // Handle successful login
-      if (data && 'user' in data && data.user) {
-        setUser(data.user as User);
-        return { success: true };
-      }
-
-      return { success: false, error: "Google login failed" };
-    } catch (error) {
-      return { success: false, error: "An error occurred" };
-    }
-  };
-
   return {
     user,
     loading,
     login,
     signup,
     logout,
-    googleLogin,
     checkAuth,
   };
 }

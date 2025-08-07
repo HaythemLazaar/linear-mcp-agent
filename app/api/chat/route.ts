@@ -4,8 +4,8 @@ import { createLinearMCP } from "../../../mastra/mcps/linear-mcp";
 import { ServerMCPAuth } from "@/lib/mcp-auth-provider/server-auth";
 
 export async function POST(req: Request) {
-  const { messages, data } = await req.json();
-  const threadId = data?.id;
+  const { messages, body } = await req.json();
+  const threadId = body?.threadId;
   try {
     // Check if user is authenticated
     const isAuthenticated = await ServerMCPAuth.isAuthenticated();
@@ -34,7 +34,7 @@ export async function POST(req: Request) {
       threadId: threadId,
     });
 
-    return stream.toDataStreamResponse();
+    return stream.toUIMessageStreamResponse();
   } catch (error) {
     console.error("Chat API error:", error);
     return new Response(JSON.stringify({ error: "Internal server error" }), {

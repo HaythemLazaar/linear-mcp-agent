@@ -16,8 +16,6 @@ export const Greeting = ({ id }: { id: string }) => {
     sendMessage,
     status,
     stop,
-    regenerate,
-    resumeStream,
   } = useChat({
     id,
     experimental_throttle: 100,

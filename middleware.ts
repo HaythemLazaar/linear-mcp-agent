@@ -17,7 +17,6 @@ export function middleware(request: NextRequest) {
   if (!sessionCookie && !pathname.startsWith("/auth")) {
     return NextResponse.redirect(new URL("/auth/login", request.url));
   }
-  console.log("sessionCookie", sessionCookie);
 
   return NextResponse.next();
 }
