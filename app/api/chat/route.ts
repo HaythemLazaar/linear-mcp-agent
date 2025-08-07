@@ -4,8 +4,8 @@ import { createLinearMCP } from "../../../mastra/mcps/linear-mcp";
 import { ServerMCPAuth } from "@/lib/mcp-auth-provider/server-auth";
 
 export async function POST(req: Request) {
-  const { messages, body } = await req.json();
-  const threadId = body?.threadId;
+  const { id, messages } = await req.json();
+  
   try {
     // Check if user is authenticated
     const isAuthenticated = await ServerMCPAuth.isAuthenticated();
@@ -13,7 +13,7 @@ export async function POST(req: Request) {
       headers: req.headers,
     });
 
-    if (!isAuthenticated || !session?.user.id || !threadId) {
+    if (!isAuthenticated || !session?.user.id || !id) {
       return new Response(
         JSON.stringify({
           error: "Authentication required",
@@ -31,7 +31,7 @@ export async function POST(req: Request) {
     const stream = await myAgent.stream(messages, {
       toolsets: await linearMCP.getToolsets(),
       resourceId: session?.user.id ?? "",
-      threadId: threadId,
+      threadId: id,
     });
 
     return stream.toUIMessageStreamResponse();

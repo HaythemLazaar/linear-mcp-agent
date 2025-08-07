@@ -67,24 +67,21 @@ export function PromptInput({
   const submitForm = useCallback(() => {
     router.replace(`/chat/${chatId}`);
 
-    sendMessage(
-      {
-        role: "user",
-        parts: [
-          ...attachments.map((attachment) => ({
-            type: "file" as const,
-            url: attachment.url,
-            name: attachment.name,
-            mediaType: attachment.contentType,
-          })),
-          {
-            type: "text",
-            text: input,
-          },
-        ],
-      },
-      { body: { threadId: chatId } }
-    );
+    sendMessage({
+      role: "user",
+      parts: [
+        ...attachments.map((attachment) => ({
+          type: "file" as const,
+          url: attachment.url,
+          name: attachment.name,
+          mediaType: attachment.contentType,
+        })),
+        {
+          type: "text",
+          text: input,
+        },
+      ],
+    });
 
     setAttachments([]);
     setInput("");

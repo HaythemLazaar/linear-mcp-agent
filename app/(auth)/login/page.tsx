@@ -37,7 +37,10 @@ export default function LoginPage() {
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
       <div className="w-full max-w-md">
         <div className="mb-8">
-          <h1 className="text-2xl font-bold text-gray-900">Log in</h1>
+          <h1 className="text-2xl font-bold text-neutral-900">Log in</h1>
+          <p className="text-sm text-neutral-600">
+            Use your email and password to sign in
+          </p>
         </div>
 
         <form onSubmit={handleEmailLogin} className="space-y-4">
@@ -96,7 +99,7 @@ export default function LoginPage() {
           <div className="text-sm text-gray-500">
             Don&apos;t have an account?{" "}
             <Link
-              href="/auth/signup"
+              href="/signup"
               className="text-indigo-600 hover:text-indigo-500 font-medium"
             >
               Sign up

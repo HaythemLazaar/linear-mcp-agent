@@ -94,7 +94,7 @@ export function useAuth() {
     try {
       await authClient.signOut();
       setUser(null);
-      router.push("/auth/login");
+      router.push("/login");
     } catch (error) {
       console.error("Logout error:", error);
     }

@@ -14,8 +14,9 @@ export function middleware(request: NextRequest) {
   // If no session cookie and not on auth pages, redirect to login
   // SECURITY WARNING: This is for optimistic redirects only
   // Always validate sessions on the server for protected actions
-  if (!sessionCookie && !pathname.startsWith("/auth")) {
-    return NextResponse.redirect(new URL("/auth/login", request.url));
+  const authRoutes = ['/login', '/signup', '/forgot-password']
+  if (!sessionCookie && !authRoutes.includes(pathname)) {
+    return NextResponse.redirect(new URL("/login", request.url));
   }
 
   return NextResponse.next();

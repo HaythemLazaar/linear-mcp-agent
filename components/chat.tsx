@@ -37,7 +37,7 @@ export function Chat({
         return {
           body: {
             id,
-            message: messages.at(-1),
+            messages,
             ...body,
           },
         };
