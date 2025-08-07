@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@ai-sdk/google':
-        specifier: ^2.0.3
-        version: 2.0.3(zod@4.0.15)
+        specifier: 1.2.22
+        version: 1.2.22(zod@4.0.15)
       '@ai-sdk/react':
         specifier: ^2.0.5
         version: 2.0.5(react@19.1.0)(zod@4.0.15)
@@ -29,6 +29,9 @@ importers:
       '@mastra/memory':
         specifier: ^0.12.1
         version: 0.12.1(@mastra/core@0.13.1(effect@3.16.12)(openapi-types@12.1.3)(react@19.1.0)(zod@4.0.15))(react@19.1.0)
+      '@mastra/pg':
+        specifier: ^0.13.3
+        version: 0.13.3(@mastra/core@0.13.1(effect@3.16.12)(openapi-types@12.1.3)(react@19.1.0)(zod@4.0.15))(pg-query-stream@4.10.3(pg@8.16.3))
       '@prisma/adapter-neon':
         specifier: ^6.13.0
         version: 6.13.0
@@ -147,11 +150,11 @@ packages:
     peerDependencies:
       zod: ^3.25.76 || ^4
 
-  '@ai-sdk/google@2.0.3':
-    resolution: {integrity: sha512-rQkY4nQGZnQw6pfftqsGsXXAqkGnl1gYjSbvD8+zyrVg2KAYeJU0NxIaacLWCORNcW+yQ/cqTpK/Uku/SIdEqA==}
+  '@ai-sdk/google@1.2.22':
+    resolution: {integrity: sha512-Ppxu3DIieF1G9pyQ5O1Z646GYR0gkC57YdBqXJ82qvCdhEhZHu0TWhmnOoeIWe2olSbuDeoOY+MfJrW8dzS3Hw==}
     engines: {node: '>=18'}
     peerDependencies:
-      zod: ^3.25.76 || ^4
+      zod: ^3.0.0
 
   '@ai-sdk/provider-utils@2.2.8':
     resolution: {integrity: sha512-fqhG+4sCVv8x7nFzYnFo19ryhAa3w096Kmc3hWxMQfW/TubPOmt3A6tYZhl4mUfQWWQMsuSkLrtjlWuXBVSGQA==}
@@ -794,6 +797,11 @@ packages:
 
   '@mastra/memory@0.12.1':
     resolution: {integrity: sha512-X5eR/R5VUnmGq3NnMZw7WU0VFPN+t1dmQaiOX1ktY9CipFKtiuiGv+OBnA18gJ389yPwQz4liAWsJmlYJt9jrA==}
+    peerDependencies:
+      '@mastra/core': '>=0.13.0-0 <0.14.0-0'
+
+  '@mastra/pg@0.13.3':
+    resolution: {integrity: sha512-jXwq1D2Q4AmWfilclr66/RgD9KOGLMMDmiRp+11ZjTgEyRTO7FasbCipUdpcZyTaCRwdN00adu087Hz4InUMdw==}
     peerDependencies:
       '@mastra/core': '>=0.13.0-0 <0.14.0-0'
 
@@ -2463,6 +2471,10 @@ packages:
   asn1js@3.0.6:
     resolution: {integrity: sha512-UOCGPYbl0tv8+006qks/dTgV9ajs97X2p0FAbyS2iyCRrmLSRolDaHdp+v/CLgnzHc3fVB+CwYiUmei7ndFcgA==}
     engines: {node: '>=12.0.0'}
+
+  assert-options@0.8.3:
+    resolution: {integrity: sha512-s6v4HnA+vYSGO4eZX+F+I3gvF74wPk+m6Z1Q3w1Dsg4Pnv/R24vhKAasoMVZGvDpOOfTg1Qz4ptZnEbuy95XsQ==}
+    engines: {node: '>=14.0.0'}
 
   ast-types-flow@0.0.8:
     resolution: {integrity: sha512-OH/2E5Fg20h2aPrbe+QL8JZQFko0YZaF+j4mnQ7BGhfavO7OpSLa8a0y9sBwomHdSbkhTS8TQNayBfnW5DwbvQ==}
@@ -4303,17 +4315,37 @@ packages:
   pg-connection-string@2.9.1:
     resolution: {integrity: sha512-nkc6NpDcvPVpZXxrreI/FOtX3XemeLl8E0qFr6F2Lrm/I8WOnaWNhIPK2Z7OHpw7gh5XJThi6j6ppgNoaT1w4w==}
 
+  pg-cursor@2.15.3:
+    resolution: {integrity: sha512-eHw63TsiGtFEfAd7tOTZ+TLy+i/2ePKS20H84qCQ+aQ60pve05Okon9tKMC+YN3j6XyeFoHnaim7Lt9WVafQsA==}
+    peerDependencies:
+      pg: ^8
+
   pg-int8@1.0.1:
     resolution: {integrity: sha512-WCtabS6t3c8SkpDBUlb1kjOs7l66xsGdKpIPZsg4wR+B3+u9UAum2odSsF9tnvxg80h4ZxLWMy4pRjOsFIqQpw==}
     engines: {node: '>=4.0.0'}
+
+  pg-minify@1.8.0:
+    resolution: {integrity: sha512-jO/oJOununpx8DzKgvSsWm61P8JjwXlaxSlbbfTBo1nvSWoo/+I6qZYaSN96jm/KDwa5d+JMQwPGgcP6HXDRow==}
+    engines: {node: '>=16.0.0'}
 
   pg-pool@3.10.1:
     resolution: {integrity: sha512-Tu8jMlcX+9d8+QVzKIvM/uJtp07PKr82IUOYEphaWcoBhIYkoHpLXN3qO59nAI11ripznDsEzEv8nUxBVWajGg==}
     peerDependencies:
       pg: '>=8.0'
 
+  pg-promise@11.15.0:
+    resolution: {integrity: sha512-EUXpXn90yPVPKxQH4qqUAEVcApd2tp/JdR3wG6LzBUgaXTUYqwmuXG4vFhhZTCctzhfzRA20EbORb9H4aAgUHA==}
+    engines: {node: '>=16.0'}
+    peerDependencies:
+      pg-query-stream: 4.10.3
+
   pg-protocol@1.10.3:
     resolution: {integrity: sha512-6DIBgBQaTKDJyxnXaLiLR8wBpQQcGWuAESkRBX/t6OwA8YsqP+iVSiond2EDy6Y/dsGk8rh/jtax3js5NeV7JQ==}
+
+  pg-query-stream@4.10.3:
+    resolution: {integrity: sha512-h2utrzpOIzeT9JfaqfvBbVuvCfBjH86jNfVrGGTbyepKAIOyTfDew0lAt8bbJjs9n/I5bGDl7S2sx6h5hPyJxw==}
+    peerDependencies:
+      pg: ^8
 
   pg-types@2.2.0:
     resolution: {integrity: sha512-qTAAlrEsl8s4OiEQY69wDvcMIdQN6wdz5ojQiOy6YRMuynxenON0O5oCpJI6lshc6scgAY8qvJ2On/p+CXY0GA==}
@@ -4818,6 +4850,10 @@ packages:
   spdx-license-ids@3.0.22:
     resolution: {integrity: sha512-4PRT4nh1EImPbt2jASOKHX7PB7I+e4IWNLvkKFDxNhJlfjbYlleYQh285Z/3mPTHSAK/AvdMmw5BNNuYH8ShgQ==}
 
+  spex@3.4.1:
+    resolution: {integrity: sha512-Br0Mu3S+c70kr4keXF+6K4B8ohR+aJjI9s7SbdsI3hliE1Riz4z+FQk7FQL+r7X1t90KPkpuKwQyITpCIQN9mg==}
+    engines: {node: '>=14.0.0'}
+
   split2@4.2.0:
     resolution: {integrity: sha512-UcjcJOWknrNkF6PLX83qcHM6KHgVKNkV62Y8a5uYDVv9ydGQVwAHMKqHdJje1VTWpljG0WYpCDhrCdAOYH4TWg==}
     engines: {node: '>= 10.x'}
@@ -5275,10 +5311,10 @@ snapshots:
       '@ai-sdk/provider-utils': 3.0.1(zod@4.0.15)
       zod: 4.0.15
 
-  '@ai-sdk/google@2.0.3(zod@4.0.15)':
+  '@ai-sdk/google@1.2.22(zod@4.0.15)':
     dependencies:
-      '@ai-sdk/provider': 2.0.0
-      '@ai-sdk/provider-utils': 3.0.1(zod@4.0.15)
+      '@ai-sdk/provider': 1.1.3
+      '@ai-sdk/provider-utils': 2.2.8(zod@4.0.15)
       zod: 4.0.15
 
   '@ai-sdk/provider-utils@2.2.8(zod@3.25.76)':
@@ -5997,6 +6033,17 @@ snapshots:
     transitivePeerDependencies:
       - pg-native
       - react
+
+  '@mastra/pg@0.13.3(@mastra/core@0.13.1(effect@3.16.12)(openapi-types@12.1.3)(react@19.1.0)(zod@4.0.15))(pg-query-stream@4.10.3(pg@8.16.3))':
+    dependencies:
+      '@mastra/core': 0.13.1(effect@3.16.12)(openapi-types@12.1.3)(react@19.1.0)(zod@4.0.15)
+      async-mutex: 0.5.0
+      pg: 8.16.3
+      pg-promise: 11.15.0(pg-query-stream@4.10.3(pg@8.16.3))
+      xxhash-wasm: 1.1.0
+    transitivePeerDependencies:
+      - pg-native
+      - pg-query-stream
 
   '@mastra/schema-compat@0.10.6(ai@4.3.19(react@19.1.0)(zod@4.0.15))(zod@4.0.15)':
     dependencies:
@@ -7865,6 +7912,8 @@ snapshots:
       pvtsutils: 1.3.6
       pvutils: 1.1.3
       tslib: 2.8.1
+
+  assert-options@0.8.3: {}
 
   ast-types-flow@0.0.8: {}
 
@@ -10070,13 +10119,34 @@ snapshots:
 
   pg-connection-string@2.9.1: {}
 
+  pg-cursor@2.15.3(pg@8.16.3):
+    dependencies:
+      pg: 8.16.3
+
   pg-int8@1.0.1: {}
+
+  pg-minify@1.8.0: {}
 
   pg-pool@3.10.1(pg@8.16.3):
     dependencies:
       pg: 8.16.3
 
+  pg-promise@11.15.0(pg-query-stream@4.10.3(pg@8.16.3)):
+    dependencies:
+      assert-options: 0.8.3
+      pg: 8.16.3
+      pg-minify: 1.8.0
+      pg-query-stream: 4.10.3(pg@8.16.3)
+      spex: 3.4.1
+    transitivePeerDependencies:
+      - pg-native
+
   pg-protocol@1.10.3: {}
+
+  pg-query-stream@4.10.3(pg@8.16.3):
+    dependencies:
+      pg: 8.16.3
+      pg-cursor: 2.15.3(pg@8.16.3)
 
   pg-types@2.2.0:
     dependencies:
@@ -10734,6 +10804,8 @@ snapshots:
       spdx-license-ids: 3.0.22
 
   spdx-license-ids@3.0.22: {}
+
+  spex@3.4.1: {}
 
   split2@4.2.0: {}
 
