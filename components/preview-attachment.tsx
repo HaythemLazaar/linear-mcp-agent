@@ -1,4 +1,4 @@
-import type { Attachment } from 'ai';
+import type { Attachment } from '@/lib/types';
 import { Loader2 } from 'lucide-react';
 
 export const PreviewAttachment = ({

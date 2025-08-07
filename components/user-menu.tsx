@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -41,7 +40,7 @@ export function UserMenu() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
           <Avatar className="border border-neutral-200 text-xs bg-neutral-100 shadow-xs size-7 rounded-full items-center justify-center">
-            <AvatarFallback className="bg-neutral-100 size-7 rounded-full min-w-6 text-xs font-semibold text-neutral-500 uppercase">
+            <AvatarFallback className="bg-neutral-100 size-7 rounded-full min-w-6 text-xs font-semibold text-neutral-500 uppercase select-none">
               {getInitials()}
             </AvatarFallback>
           </Avatar>

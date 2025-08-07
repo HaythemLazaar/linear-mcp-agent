@@ -6,7 +6,7 @@ import z from "zod";
 
 const memory = new Memory({
   storage: new LibSQLStore({
-    url: "file:../mastra.db",
+    url: "file:../dev-db/mastra.db",
   }),
   options: {
     threads: {
@@ -28,7 +28,6 @@ const memory = new Memory({
           .string()
           .optional()
           .describe("Store the Linear project ID if provided"), // Store the Linear project ID if provided
-        prdId: z.string().optional().describe("Store the PRD document ID"), // Store the PRD document ID
         issues: z
           .array(
             z.object({

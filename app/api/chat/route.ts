@@ -27,7 +27,7 @@ export async function POST(req: Request) {
 
     // Create MCP client with OAuth token
     const linearMCP = await createLinearMCP();
-    const myAgent = mastra.getAgent("linearPrdAgent");
+    const myAgent = mastra.getAgent("linearAgent");
     const stream = await myAgent.stream(messages, {
       toolsets: await linearMCP.getToolsets(),
       resourceId: session?.user.id ?? "",

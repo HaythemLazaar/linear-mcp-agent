@@ -1,52 +1,43 @@
 "use client";
 
-import { PromptInput } from "@/components/chat-input";
+import { PromptInput } from "@/components/prompt-input";
 import { Button } from "@/components/ui/button";
 import { generateUUID } from "@/lib/utils";
 import { ChevronRight } from "lucide-react";
 import { useChat } from "@ai-sdk/react";
-import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import { Attachment } from "ai";
+import { useState } from "react";
+import type { Attachment } from "@/lib/types";
+import { DefaultChatTransport } from "ai";
 
 export const Greeting = ({ id }: { id: string }) => {
   const {
     messages,
     setMessages,
-    handleSubmit,
-    input,
-    setInput,
-    append,
+    sendMessage,
     status,
     stop,
-    reload,
+    regenerate,
+    resumeStream,
   } = useChat({
     id,
     experimental_throttle: 100,
-    sendExtraMessageFields: true,
     generateId: generateUUID,
-    api: "/api/chat",
+    transport: new DefaultChatTransport({
+      api: "/api/chat",
+      prepareSendMessagesRequest({ messages, id, body }) {
+        return {
+          body: {
+            id,
+            message: messages.at(-1),
+            ...body,
+          },
+        };
+      },
+    }),
     onError: (error) => {
       console.error(error);
     },
   });
-
-  const searchParams = useSearchParams();
-  const query = searchParams.get("query");
-
-  const [hasAppendedQuery, setHasAppendedQuery] = useState(false);
-
-  useEffect(() => {
-    if (query && !hasAppendedQuery) {
-      append({
-        role: "user",
-        content: query,
-      });
-
-      setHasAppendedQuery(true);
-      window.history.replaceState({}, "", `/chat/${id}`);
-    }
-  }, [query, append, hasAppendedQuery, id]);
 
   const [attachments, setAttachments] = useState<Array<Attachment>>([]);
 
@@ -57,17 +48,14 @@ export const Greeting = ({ id }: { id: string }) => {
       </h1>
 
       <PromptInput
-        projectId={id}
-        input={input}
-        setInput={setInput}
+        chatId={id}
         status={status}
         stop={stop}
         attachments={attachments}
         setAttachments={setAttachments}
         messages={messages}
         setMessages={setMessages}
-        append={append}
-        handleSubmit={handleSubmit}
+        sendMessage={sendMessage}
       />
       <div className="flex items-center gap-2">
         <Button

@@ -6,7 +6,7 @@ import { linearAgent } from "./agents/linear-agent";
 export const mastra = new Mastra({
   agents: { linearAgent },
   storage: new LibSQLStore({
-    url: "file:../mastra.db",
+    url: "file:../dev-db/mastra.db",
   }),
   logger: new PinoLogger({
     name: "Mastra",
