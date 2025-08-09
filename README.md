@@ -1,36 +1,59 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+<h1 align="center">Linear-mcp-agent</h1>
+
+<p align="center">
+  An AI agent that helps you manage your Linear projects.
+</p>
+
+<p align="center">
+  <a href="#introduction"><strong>Introduction</strong></a> ·
+  <a href="#features"><strong>Deploy Your Own</strong></a> ·
+  <a href="#tech-stack"><strong>Tech Stack</strong></a> ·
+  <a href="#getting-started"><strong>Setting Up Locally</strong></a> ·
+  <a href="#contributing"><strong>Contributing</strong></a> ·
+  <a href="#license"><strong>License</strong></a>
+</p>
+<br/>
+
+## Introduction
+
+This is an AI agent built with [Mastra](https://mastra.io), the [Vercel AI SDK](https://sdk.vercel.ai/docs) with [Linear](https://linear.app) MCP tools to help you with project management, it uses Google Gemini `gemini-1.5-pro` models. The agent can create and view issues, projects, and more within Linear.
+
+## Features
+
+- **Use linear MCP tools:** Use the official linear 20+ MCP tools like: (list_issues, create_issue, list_teams...).
+- **Extensible:** Built on Mastra, allowing for new tools and capabilities to be added easily.
+- **Open-Source:** Available under the Apache 2.0 license.
+
+## Tech Stack
+
+- [Next.js](https://nextjs.org/) – React framework for building the user interface.
+- [Shadcn](https://ui.shadcn.com/) - The React & tailwind UI component library
+- [Mastra](https://mastra.io) – The underlying framework for the self-operating agent.
+- [Vercel AI SDK](https://sdk.vercel.ai/docs) – For building the AI-powered chat interface.
 
 ## Getting Started
 
-First, run the development server:
+To get started, you can clone the repository and install the dependencies:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone <your-repo-url>
+cd <your-repo-name>
+pnpm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+You will also need to set up your environment variables. Copy the `.env.example` file to `.env` and fill in the required values.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Then, you can run the development server:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+pnpm dev
+```
 
-## Learn More
+## Contributing
 
-To learn more about Next.js, take a look at the following resources:
+- [Open an issue](https://github.com/HaythemLazaar/linear-mcp-agent/issues) if you believe you've encountered a bug.
+- Make a [pull request](https://github.com/HaythemLazaar/linear-mcp-agent/pull) to add new features/make quality-of-life improvements/fix bugs.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## License
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+This project is licensed under the [Apache 2.0 license](https://github.com/HaythemLazaar/linear-mcp-agent/blob/main/LICENSE).
