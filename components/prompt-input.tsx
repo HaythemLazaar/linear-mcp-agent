@@ -31,6 +31,7 @@ import { useWindowSize } from "usehooks-ts";
 import { useRouter } from "next/navigation";
 import { LinearAuth } from "./linear-auth";
 import { Attachment } from "@/lib/types";
+import { LinearObjectsCombobox } from "./linear-objects-combobox";
 
 export function PromptInput({
   chatId,
@@ -176,6 +177,7 @@ export function PromptInput({
             className
           )}
         >
+          <LinearObjectsCombobox />
           <Textarea
             data-testid="multimodal-input"
             ref={textareaRef}

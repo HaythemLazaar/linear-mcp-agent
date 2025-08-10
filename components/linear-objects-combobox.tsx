@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Plus } from "lucide-react";
+import { Check, Plus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import z from "zod";
 import { useQuery } from "@tanstack/react-query";
-import { TbUserSquare } from "react-icons/tb";
+import { TbCube, TbUserSquare } from "react-icons/tb";
 import { projectsSchema, teamsSchema } from "@/lib/schemas";
 import { LinearProject, LinearTeam } from "@/lib/types";
 import { useLinearOjects } from "@/hooks/use-linear-objects";
@@ -67,7 +67,9 @@ export function LinearObjectsCombobox() {
         <DropdownMenuContent align="end" className="w-[200px]">
           <DropdownMenuGroup>
             <DropdownMenuSub>
-              <DropdownMenuSubTrigger>Team</DropdownMenuSubTrigger>
+              <DropdownMenuSubTrigger className="gap-2 text-[13px]">
+                <TbCube className="size-3.5 text-neutral-500" /> Team
+              </DropdownMenuSubTrigger>
               <DropdownMenuSubContent className="p-0">
                 <Command>
                   <CommandInput
@@ -80,19 +82,24 @@ export function LinearObjectsCombobox() {
                     <CommandGroup>
                       {!teamsError &&
                         !isTeamsLoading &&
-                        teams?.teams.map((team: LinearTeam) => (
+                        teams?.teams.map((t: LinearTeam) => (
                           <CommandItem
-                            key={team.id}
-                            value={team.id}
-                            onSelect={(value) => {
+                            key={t.id}
+                            value={t.name}
+                            onSelect={() => {
                               const selectedTeam = teams.teams.find(
-                                (t) => t.id === value
+                                (te) => te.id === t.id
                               );
                               setTeam(selectedTeam!);
                               setOpen(false);
                             }}
+                            className="text-[13px]"
                           >
-                            {team.name}
+                            <TbCube className="size-3.5 -mt-px text-neutral-500" />{" "}
+                            {t.name}
+                            {team && t.id === team.id && (
+                              <Check className="ml-auto" />
+                            )}
                           </CommandItem>
                         ))}
                     </CommandGroup>
@@ -101,7 +108,9 @@ export function LinearObjectsCombobox() {
               </DropdownMenuSubContent>
             </DropdownMenuSub>
             <DropdownMenuSub>
-              <DropdownMenuSubTrigger>Project</DropdownMenuSubTrigger>
+              <DropdownMenuSubTrigger className="gap-2 text-[13px]">
+                <TbCube className="size-3.5 text-neutral-500" /> Project
+              </DropdownMenuSubTrigger>
               <DropdownMenuSubContent className="p-0">
                 <Command>
                   <CommandInput
@@ -114,20 +123,24 @@ export function LinearObjectsCombobox() {
                     <CommandGroup>
                       {!projectsError &&
                         !isProjectsLoading &&
-                        projects?.projects.map((project: LinearProject) => (
+                        projects?.projects.map((p: LinearProject) => (
                           <CommandItem
-                            key={project.id}
-                            value={project.id}
-                            onSelect={(value) => {
+                            key={p.id}
+                            value={p.name}
+                            onSelect={() => {
                               const selectedProject = projects.projects.find(
-                                (p) => p.id === value
+                                (pr) => pr.id === p.id
                               );
                               setProject(selectedProject!);
                               setOpen(false);
                             }}
+                            className="text-[13px]"
                           >
-                            <TbUserSquare className="size-4 text-neutral-500" />{" "}
-                            {project.name}
+                            <TbCube className="size-3.5 -mt-px text-neutral-500" />{" "}
+                            {p.name}
+                            {project && p.id === project.id && (
+                              <Check className="ml-auto" />
+                            )}
                           </CommandItem>
                         ))}
                     </CommandGroup>
@@ -152,4 +165,3 @@ export function LinearObjectsCombobox() {
     </div>
   );
 }
-
