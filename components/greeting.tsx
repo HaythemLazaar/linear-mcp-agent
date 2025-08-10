@@ -8,15 +8,13 @@ import { useChat } from "@ai-sdk/react";
 import { useState } from "react";
 import type { Attachment } from "@/lib/types";
 import { DefaultChatTransport } from "ai";
+import { useQueryClient } from "@tanstack/react-query";
+import { useAuth } from "@/hooks/use-auth";
 
 export const Greeting = ({ id }: { id: string }) => {
-  const {
-    messages,
-    setMessages,
-    sendMessage,
-    status,
-    stop,
-  } = useChat({
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+  const { messages, setMessages, sendMessage, status, stop } = useChat({
     id,
     experimental_throttle: 100,
     generateId: generateUUID,
@@ -26,7 +24,7 @@ export const Greeting = ({ id }: { id: string }) => {
         return {
           body: {
             id,
-            message: messages.at(-1),
+            messages,
             ...body,
           },
         };
@@ -35,6 +33,12 @@ export const Greeting = ({ id }: { id: string }) => {
     onError: (error) => {
       console.error(error);
     },
+    onFinish: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["threads", user?.id],
+        exact: true,
+      });
+    },
   });
 
   const [attachments, setAttachments] = useState<Array<Attachment>>([]);
@@ -42,7 +46,7 @@ export const Greeting = ({ id }: { id: string }) => {
   return (
     <div className="flex flex-col gap-4 max-w-4xl mx-auto w-full">
       <h1 className="text-xl font-medium text-neutral-900 tracking-tighter">
-        Welcome Haythem, what are you planning to build?
+        Welcome, what are you planning to build?
       </h1>
 
       <PromptInput

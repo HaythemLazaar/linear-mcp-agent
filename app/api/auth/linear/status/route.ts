@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { ServerMCPAuth } from "@/lib/mcp-auth-provider/server-auth";
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     // Check authentication status
     const isAuthenticated = await ServerMCPAuth.isAuthenticated();
@@ -10,7 +10,6 @@ export async function GET(request: NextRequest) {
     let tokenInfo = null;
     if (isAuthenticated) {
       const token = await ServerMCPAuth.getAccessToken();
-      console.log("**********token*********", token);
       if (token) {
         tokenInfo = {
           hasToken: true,

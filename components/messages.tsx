@@ -1,6 +1,5 @@
 import type { UIMessage } from "ai";
 import { PreviewMessage, ThinkingMessage } from "./message";
-import { Greeting } from "./greeting";
 import { memo } from "react";
 import equal from "fast-deep-equal";
 import type { UseChatHelpers } from "@ai-sdk/react";
@@ -8,7 +7,7 @@ import { motion } from "framer-motion";
 import { useMessages } from "@/hooks/use-messages";
 import { cn } from "@/lib/utils";
 import { LinearAuth } from "./linear-auth";
-import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
+import { Alert, AlertDescription } from "./ui/alert";
 
 interface MessagesProps {
   chatId: string;
@@ -46,8 +45,6 @@ function PureMessages({
         messages.length === 0 && "justify-center"
       )}
     >
-      {/* {messages.length === 0 && <Greeting />} */}
-
       {messages.map((message, index) => (
         <PreviewMessage
           key={message.id}

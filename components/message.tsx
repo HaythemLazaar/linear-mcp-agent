@@ -1,6 +1,6 @@
 "use client";
 
-import type { UIMessage } from "ai";
+import type { DynamicToolUIPart, UIMessage } from "ai";
 import { AnimatePresence, motion } from "framer-motion";
 import { memo, useState } from "react";
 import { Markdown } from "./markdown";
@@ -20,9 +20,7 @@ import {
   AccordionContent,
 } from "./ui/accordion";
 
-
 const PurePreviewMessage = ({
-  chatId,
   message,
   isLoading,
   setMessages,
@@ -33,12 +31,12 @@ const PurePreviewMessage = ({
   message: UIMessage;
   isLoading: boolean;
   setMessages: UseChatHelpers<UIMessage>["setMessages"];
-  regenerate: UseChatHelpers<UIMessage>['regenerate'];
+  regenerate: UseChatHelpers<UIMessage>["regenerate"];
   requiresScrollPadding: boolean;
 }) => {
   const [mode, setMode] = useState<"view" | "edit">("view");
   const attachmentsFromMessage = message.parts.filter(
-    (part) => part.type === 'file',
+    (part) => part.type === "file"
   );
 
   return (
@@ -73,22 +71,22 @@ const PurePreviewMessage = ({
             })}
           >
             {attachmentsFromMessage.length > 0 && (
-                <div
-                  data-testid={`message-attachments`}
-                  className="flex flex-row justify-end gap-2"
-                >
-                  {attachmentsFromMessage.map((attachment) => (
+              <div
+                data-testid={`message-attachments`}
+                className="flex flex-row justify-end gap-2"
+              >
+                {attachmentsFromMessage.map((attachment) => (
                   <PreviewAttachment
                     key={attachment.url}
                     attachment={{
-                      name: attachment.filename ?? 'file',
+                      name: attachment.filename ?? "file",
                       contentType: attachment.mediaType,
                       url: attachment.url,
                     }}
                   />
                 ))}
-                </div>
-              )}
+              </div>
+            )}
 
             {message.parts?.map((part, index) => {
               const { type } = part;
@@ -156,22 +154,8 @@ const PurePreviewMessage = ({
                 }
               }
 
-              if (type === "tool-invocation") {
-                const { toolCallId, state, output } = part;
-
-                if (state === "input-available") {
-                  return (
-                    <div
-                      key={toolCallId}
-                      className="flex items-center gap-2 p-4 bg-neutral-100 ring-1 ring-neutral-200 rounded-md"
-                    >
-                      <Loader2 className="size-4 animate-spin" />
-                      <span className="text-sm font-medium">
-                        Calling {toolCallId}...
-                      </span>
-                    </div>
-                  );
-                }
+              if (type.startsWith("tool-")) {
+                const { toolCallId, state, output } = part as DynamicToolUIPart;
 
                 if (state === "output-available") {
                   return (
@@ -181,7 +165,7 @@ const PurePreviewMessage = ({
                     >
                       <Accordion type="single" collapsible className="w-full">
                         <AccordionItem value="item-1">
-                          <AccordionTrigger>{toolCallId}</AccordionTrigger>
+                          <AccordionTrigger>{type}</AccordionTrigger>
                           <AccordionContent className="flex flex-col gap-4 text-balance">
                             <div className="flex flex-col gap-2 max-w-full overflow-x-auto">
                               <pre className="text-sm">
@@ -193,7 +177,18 @@ const PurePreviewMessage = ({
                       </Accordion>
                     </div>
                   );
-                }
+                } else
+                  return (
+                    <div
+                      key={toolCallId}
+                      className="flex items-center gap-2 p-4 bg-neutral-100 ring-1 ring-neutral-200 rounded-md"
+                    >
+                      <Loader2 className="size-4 animate-spin" />
+                      <span className="text-sm font-medium">
+                        Calling {type}...
+                      </span>
+                    </div>
+                  );
               }
             })}
 
