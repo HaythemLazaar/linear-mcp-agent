@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Check, Plus } from "lucide-react";
+import { Check, Plus, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -23,10 +23,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import z from "zod";
 import { useQuery } from "@tanstack/react-query";
-import { TbCube, TbUserSquare } from "react-icons/tb";
+import { TbCube, TbUserPentagon } from "react-icons/tb";
 import { projectsSchema, teamsSchema } from "@/lib/schemas";
 import { LinearProject, LinearTeam } from "@/lib/types";
 import { useLinearOjects } from "@/hooks/use-linear-objects";
+import { BiLoaderCircle, BiSolidRightArrow } from "react-icons/bi";
+import { MdOutlineError } from "react-icons/md";
+import { cn } from "@/lib/utils";
 
 export function LinearObjectsCombobox() {
   const { project, team, setProject, setTeam } = useLinearOjects();
@@ -60,15 +63,43 @@ export function LinearObjectsCombobox() {
     <div className="flex gap-2 items-center">
       <DropdownMenu open={open} onOpenChange={setOpen}>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="sm">
-            <Plus />
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-6 rounded-sm font-normal tracking-normal text-xs !px-2 text-neutral-800 gap-1 border-neutral-300"
+          >
+            <Plus className="size-3.5" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-[200px]">
           <DropdownMenuGroup>
             <DropdownMenuSub>
-              <DropdownMenuSubTrigger className="gap-2 text-[13px]">
-                <TbCube className="size-3.5 text-neutral-500" /> Team
+              <DropdownMenuSubTrigger
+                className={cn("gap-2 text-[13px]", {
+                  "*:last:ml-0": teamsError,
+                })}
+                ArrowIcon={
+                  isTeamsLoading
+                    ? BiLoaderCircle
+                    : teamsError
+                      ? MdOutlineError
+                      : BiSolidRightArrow
+                }
+                disabled={isTeamsLoading || teamsError}
+                arrowIconClassName={
+                  isTeamsLoading
+                    ? "size-3 animate-spin"
+                    : teamsError
+                      ? "size-4 text-red-500"
+                      : ""
+                }
+              >
+                <TbUserPentagon className="size-3.5 text-neutral-500" /> Team{" "}
+                {teamsError && (
+                  <span className="text-neutral-500 text-xs ml-auto">
+                    Error
+                  </span>
+                )}
               </DropdownMenuSubTrigger>
               <DropdownMenuSubContent className="p-0">
                 <Command>
@@ -95,7 +126,7 @@ export function LinearObjectsCombobox() {
                             }}
                             className="text-[13px]"
                           >
-                            <TbCube className="size-3.5 -mt-px text-neutral-500" />{" "}
+                            <TbUserPentagon className="size-3.5 -mt-px text-neutral-500" />{" "}
                             {t.name}
                             {team && t.id === team.id && (
                               <Check className="ml-auto" />
@@ -108,8 +139,32 @@ export function LinearObjectsCombobox() {
               </DropdownMenuSubContent>
             </DropdownMenuSub>
             <DropdownMenuSub>
-              <DropdownMenuSubTrigger className="gap-2 text-[13px]">
-                <TbCube className="size-3.5 text-neutral-500" /> Project
+              <DropdownMenuSubTrigger
+                className={cn("gap-2 text-[13px]", {
+                  "*:last:ml-0": projectsError,
+                })}
+                ArrowIcon={
+                  isProjectsLoading
+                    ? BiLoaderCircle
+                    : projectsError
+                      ? MdOutlineError
+                      : BiSolidRightArrow
+                }
+                arrowIconClassName={
+                  isProjectsLoading
+                    ? "size-3 animate-spin"
+                    : projectsError
+                      ? "size-4 text-red-500"
+                      : ""
+                }
+                disabled={isProjectsLoading || projectsError}
+              >
+                <TbCube className="size-3.5 text-neutral-500" /> Project{" "}
+                {projectsError && (
+                  <span className="text-neutral-500 text-xs -mb-0.5 ml-auto">
+                    Error
+                  </span>
+                )}
               </DropdownMenuSubTrigger>
               <DropdownMenuSubContent className="p-0">
                 <Command>
@@ -153,14 +208,32 @@ export function LinearObjectsCombobox() {
       </DropdownMenu>
 
       {!!project && (
-        <span className="bg-primary text-primary-foreground mr-2 rounded-lg px-2 py-1 text-xs">
-          {project.name}
-        </span>
+        <Button
+          variant="outline"
+          className="h-6 rounded-sm font-normal tracking-normal text-xs !px-2 text-neutral-800 gap-1 border-neutral-300 group/selected relative overflow-hidden"
+        >
+          <TbCube className="size-3 text-neutral-500" />
+          <span className="max-w-30 text-ellipsis overflow-hidden">
+            {project.name}
+          </span>
+          <button className="absolute group-hover/selected:opacity-100 opacity-0 transition-all right-0  px-1 h-full top-0 flex items-center justify-center" onClick={() => setProject(null)}>
+            <X className="size-3 bg-white"/>
+          </button>
+        </Button>
       )}
       {!!team && (
-        <span className="bg-primary text-primary-foreground mr-2 rounded-lg px-2 py-1 text-xs">
-          {team.name}
-        </span>
+        <Button
+          variant="outline"
+          className="h-6 rounded-sm font-normal tracking-normal text-xs !px-2 text-neutral-800 gap-1 border-neutral-300 group/selected relative overflow-hidden"
+        >
+          <TbUserPentagon className="size-3 text-neutral-500" />
+          <span className="max-w-30 text-ellipsis overflow-hidden">
+            {team.name}
+          </span>
+          <button className="absolute group-hover/selected:opacity-100 opacity-0 transition-all right-0  px-1 h-full top-0 flex items-center justify-center" onClick={() => setTeam(null)}>
+            <X className="size-3 bg-white"/>
+          </button>
+        </Button>
       )}
     </div>
   );
