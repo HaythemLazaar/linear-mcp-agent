@@ -26,13 +26,13 @@ import { useQuery } from "@tanstack/react-query";
 import { TbCube, TbUserPentagon } from "react-icons/tb";
 import { projectsSchema, teamsSchema } from "@/lib/schemas";
 import { LinearProject, LinearTeam } from "@/lib/types";
-import { useLinearOjects } from "@/hooks/use-linear-objects";
+import { useLinearObjects } from "@/hooks/use-linear-objects";
 import { BiLoaderCircle, BiSolidRightArrow } from "react-icons/bi";
 import { MdOutlineError } from "react-icons/md";
 import { cn } from "@/lib/utils";
 
 export function LinearObjectsCombobox() {
-  const { project, team, setProject, setTeam } = useLinearOjects();
+  const { project, team, setProject, setTeam } = useLinearObjects();
   const [open, setOpen] = React.useState(false);
   const {
     data: teams,
@@ -216,9 +216,9 @@ export function LinearObjectsCombobox() {
           <span className="max-w-30 text-ellipsis overflow-hidden">
             {project.name}
           </span>
-          <button className="absolute group-hover/selected:opacity-100 opacity-0 transition-all right-0  px-1 h-full top-0 flex items-center justify-center" onClick={() => setProject(null)}>
+          <span className="absolute group-hover/selected:opacity-100 opacity-0 transition-all right-0  px-1 h-full top-0 flex items-center justify-center" onClick={() => setProject(null)}>
             <X className="size-3 bg-white"/>
-          </button>
+          </span>
         </Button>
       )}
       {!!team && (
@@ -230,9 +230,9 @@ export function LinearObjectsCombobox() {
           <span className="max-w-30 text-ellipsis overflow-hidden">
             {team.name}
           </span>
-          <button className="absolute group-hover/selected:opacity-100 opacity-0 transition-all right-0  px-1 h-full top-0 flex items-center justify-center" onClick={() => setTeam(null)}>
+          <span className="absolute group-hover/selected:opacity-100 opacity-0 transition-all right-0  px-1 h-full top-0 flex items-center justify-center" onClick={() => setTeam(null)}>
             <X className="size-3 bg-white"/>
-          </button>
+          </span>
         </Button>
       )}
     </div>

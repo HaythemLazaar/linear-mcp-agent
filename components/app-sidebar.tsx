@@ -17,7 +17,7 @@ import { TbCube, TbSmartHome } from "react-icons/tb";
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname();
   const isHome = pathname === "/";
-  const isProjects = pathname === "/projects";
+  const isChats = pathname === "/chats";
   const { user } = useAuth();
   const { data: threads } = useQuery({
     queryKey: ["threads", user?.id],
@@ -43,7 +43,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenuButton
             className={cn(
               "text-neutral-700 font-medium hover:bg-neutral-200/50",
-              isProjects && "bg-neutral-200/50 text-neutral-900"
+              isChats && "bg-neutral-200/50 text-neutral-900"
             )}
             asChild
           >

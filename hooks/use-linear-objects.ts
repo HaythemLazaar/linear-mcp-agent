@@ -1,7 +1,7 @@
 import { LinearProject, LinearTeam } from "@/lib/types";
 import { useState } from "react";
 
-function useLinearOjects() {
+function useLinearObjects() {
   const [project, setProject] = useState<LinearProject | null>(null);
   const [team, setTeam] = useState<LinearTeam | null>(null);
 
@@ -13,4 +13,4 @@ function useLinearOjects() {
   };
 }
 
-export { useLinearOjects };
+export { useLinearObjects };

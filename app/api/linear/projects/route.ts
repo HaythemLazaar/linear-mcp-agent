@@ -62,7 +62,7 @@ export async function GET(req: Request) {
     });
   } catch (error) {
     console.error(`Error fetching projects: ${error}`);
-    return new Response(`Error fetching teams`, {
+    return new Response(`Error fetching projects`, {
       status: 500,
     });
   }

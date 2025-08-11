@@ -25,7 +25,6 @@ export function Chat({
     status,
     stop,
     regenerate,
-    resumeStream,
   } = useChat({
     id,
     experimental_throttle: 100,
@@ -87,7 +86,6 @@ export function Chat({
           regenerate={regenerate}
           authError={authError}
         />
-        {/* {messages.length > 0 && ( */}
         <form className={cn("sticky bottom-0 max-w-3xl mx-auto w-full")}>
           <PromptInput
             chatId={id}
@@ -101,7 +99,6 @@ export function Chat({
             isAtBottom
           />
         </form>
-        {/* )} */}
       </div>
     </div>
   );

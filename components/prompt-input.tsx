@@ -213,7 +213,7 @@ export function PromptInput({
             variant="outline"
             className="h-7 bg-indigo-500 text-white hover:text-white hover:bg-indigo-600 border-indigo-600/50 rounded-sm font-medium tracking-normal text-xs"
             onClick={status === "submitted" ? stop : submitForm}
-            disabled={input === ''}
+            disabled={input.trim() === "" && attachments.length === 0}
           >
             {status === "submitted" ? "Stop" : !isAtBottom ? "Start" : "Send"}
           </Button>
