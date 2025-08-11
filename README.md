@@ -1,3 +1,4 @@
+<img width="1919" height="1079" alt="Screenshot 2025-08-11 202229" src="https://github.com/user-attachments/assets/6c662f7a-9eec-41b6-81bb-4642190825ec" />
 <h1 align="center">Linear-mcp-agent</h1>
 
 <p align="center">
