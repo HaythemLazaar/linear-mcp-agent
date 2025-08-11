@@ -1,15 +1,9 @@
-import type { Metadata } from "next";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { cookies } from "next/headers";
 import { AppSidebar } from "@/components/app-sidebar";
 import { Header } from "@/components/header";
 import { Toaster } from "sonner";
 import { QueryProvider } from "@/components/query-client-provider";
-
-export const metadata: Metadata = {
-  title: "Linear PRD",
-  description: "Product Requirements Document Generator",
-};
 
 export default async function ProtectedLayout({
   children,

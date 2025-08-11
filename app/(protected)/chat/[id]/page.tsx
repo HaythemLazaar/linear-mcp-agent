@@ -1,8 +1,8 @@
 import { Chat } from "@/components/chat";
 import { auth } from "@/lib/auth";
-import { mastra } from "@/mastra";
+import { memory } from "@/mastra/memory";
 import { headers } from "next/headers";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 export default async function ChatPage({
   params,
@@ -16,7 +16,8 @@ export default async function ChatPage({
     redirect("/login");
   }
   const { id } = await params;
-  const thread = await mastra.getMemory()?.query({ threadId: id });
-
-  return <Chat id={id} initialMessages={thread?.uiMessages || []} />;
+  const thread = await memory.query({ threadId: id });
+  console.log("THREAD:", thread.messages)
+  if (!thread || thread.messages.length === 0) notFound();
+  return <Chat id={id} initialMessages={thread.uiMessages} />;
 }

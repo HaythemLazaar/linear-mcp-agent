@@ -9,21 +9,8 @@ import React, {
   useState,
 } from "react";
 import { Paperclip } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSub,
-  DropdownMenuPortal,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
-} from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
-import { HiOutlineViewGridAdd } from "react-icons/hi";
-import { FaGithub, FaGoogleDrive } from "react-icons/fa";
-import { TbCube, TbUserSquare } from "react-icons/tb";
 import { UseChatHelpers } from "@ai-sdk/react";
 import { UIMessage } from "ai";
 import { toast } from "sonner";
@@ -31,6 +18,7 @@ import { useWindowSize } from "usehooks-ts";
 import { useRouter } from "next/navigation";
 import { LinearAuth } from "./linear-auth";
 import { Attachment } from "@/lib/types";
+import { LinearObjectsCombobox } from "./linear-objects-combobox";
 
 export function PromptInput({
   chatId,
@@ -182,7 +170,7 @@ export function PromptInput({
             value={input}
             onChange={handleInput}
             placeholder="Tell me your goal..."
-            className="textarea field-sizing-content max-h-29.5 min-h-12 focus-visible:min-h-24 transition-all resize-none font-medium text-neutral-800 p-1 border-none focus-visible:ring-0 shadow-none placeholder:text-neutral-500 rounded-none"
+            className="textarea field-sizing-content max-h-29.5 min-h-12 focus-visible:min-h-24 transition-all resize-none font-medium text-neutral-800 p-0 border-none focus-visible:ring-0 shadow-none placeholder:text-neutral-500 rounded-none"
             style={{
               scrollbarWidth: "thin",
             }}
@@ -206,74 +194,7 @@ export function PromptInput({
               }
             }}
           />
-          <div className="flex items-center gap-2">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="h-6 rounded-sm font-normal tracking-normal text-xs !px-2 text-neutral-800 gap-1 border-neutral-300"
-                >
-                  <TbUserSquare className="size-3.5" />
-                  <span className="">Team</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start">
-                <DropdownMenuSub>
-                  <DropdownMenuSubTrigger className="flex items-center gap-2">
-                    <HiOutlineViewGridAdd className="size-4 text-neutral-500" />{" "}
-                    Add from apps
-                  </DropdownMenuSubTrigger>
-                  <DropdownMenuPortal>
-                    <DropdownMenuSubContent>
-                      <DropdownMenuItem>
-                        <FaGithub className="size-4 text-neutral-500" /> Github
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <FaGoogleDrive className="size-4 text-neutral-500" />{" "}
-                        Google Drive
-                      </DropdownMenuItem>
-                    </DropdownMenuSubContent>
-                  </DropdownMenuPortal>
-                </DropdownMenuSub>
-                <DropdownMenuItem>
-                  <Paperclip /> Add photos and files
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="h-6 rounded-sm font-normal tracking-normal text-xs !px-2 text-neutral-800 gap-1 border-neutral-300"
-                >
-                  <TbCube className="size-3.5" />
-                  <span className="">Project</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start">
-                <DropdownMenuSub>
-                  <DropdownMenuSubTrigger className="flex items-center gap-2">
-                    <HiOutlineViewGridAdd className="size-4 text-neutral-500" />{" "}
-                    Add from apps
-                  </DropdownMenuSubTrigger>
-                  <DropdownMenuPortal>
-                    <DropdownMenuSubContent>
-                      <DropdownMenuItem>
-                        <FaGithub className="size-4 text-neutral-500" /> Github
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <FaGoogleDrive className="size-4 text-neutral-500" />{" "}
-                        Google Drive
-                      </DropdownMenuItem>
-                    </DropdownMenuSubContent>
-                  </DropdownMenuPortal>
-                </DropdownMenuSub>
-                <DropdownMenuItem>
-                  <Paperclip /> Add photos and files
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
+          <LinearObjectsCombobox />
         </div>
         <div className="flex items-center justify-between p-3">
           <Button
@@ -292,6 +213,7 @@ export function PromptInput({
             variant="outline"
             className="h-7 bg-indigo-500 text-white hover:text-white hover:bg-indigo-600 border-indigo-600/50 rounded-sm font-medium tracking-normal text-xs"
             onClick={status === "submitted" ? stop : submitForm}
+            disabled={input.trim() === "" && attachments.length === 0}
           >
             {status === "submitted" ? "Stop" : !isAtBottom ? "Start" : "Send"}
           </Button>

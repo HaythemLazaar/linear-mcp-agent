@@ -12,16 +12,15 @@ import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { TbCube, TbFileSmile, TbSmartHome } from "react-icons/tb";
+import { TbCube, TbSmartHome } from "react-icons/tb";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname();
   const isHome = pathname === "/";
-  const isProjects = pathname === "/projects";
-  const isDocuments = pathname === "/documents";
+  const isChats = pathname === "/chats";
   const { user } = useAuth();
   const { data: threads } = useQuery({
-    queryKey: ["threads"],
+    queryKey: ["threads", user?.id],
     queryFn: () => getUserThreads(user?.id || ""),
     enabled: !!user?.id,
   });
@@ -44,25 +43,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenuButton
             className={cn(
               "text-neutral-700 font-medium hover:bg-neutral-200/50",
-              isProjects && "bg-neutral-200/50 text-neutral-900"
+              isChats && "bg-neutral-200/50 text-neutral-900"
             )}
             asChild
           >
-            <Link href="/projects">
+            <Link href="/chats">
               <TbCube strokeWidth={1.5} />
-              Projects
-            </Link>
-          </SidebarMenuButton>
-          <SidebarMenuButton
-            className={cn(
-              "text-neutral-700 font-medium hover:bg-neutral-200/50",
-              isDocuments && "bg-neutral-200/50 text-neutral-900"
-            )}
-            asChild
-          >
-            <Link href="/documents">
-              <TbFileSmile strokeWidth={1.5} />
-              Documents
+              Chats
             </Link>
           </SidebarMenuButton>
         </SidebarGroup>
@@ -73,12 +60,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               key={thread.id}
               className={cn(
                 "text-neutral-700 font-medium hover:bg-neutral-200/50",
-                pathname === `/projects/${thread.id}` &&
+                pathname === `/chat/${thread.id}` &&
                   "bg-neutral-200/50 text-neutral-900"
               )}
               asChild
             >
-              <Link href={`/projects/${thread.id}`}>
+              <Link href={`/chat/${thread.id}`}>
                 {thread.title || "Untitled Thread"}
               </Link>
             </SidebarMenuButton>
