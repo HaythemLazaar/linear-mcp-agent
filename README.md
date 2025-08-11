@@ -29,7 +29,7 @@ This is an AI agent built with [Mastra](https://mastra.io), the [Vercel AI SDK](
 
 - [Next.js](https://nextjs.org/) – React framework for building the user interface.
 - [Shadcn](https://ui.shadcn.com/) - The React & tailwind UI component library
-- [Mastra](https://mastra.io) – The underlying framework for the self-operating agent.
+- [Mastra](https://mastra.ai) – The underlying framework for the self-operating agent.
 - [Vercel AI SDK](https://sdk.vercel.ai/docs) – For building the AI-powered chat interface.
 
 ## Getting Started
