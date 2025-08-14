@@ -8,6 +8,7 @@ import { PromptInput } from "./prompt-input";
 import { Messages } from "./messages";
 import { cn } from "@/lib/utils";
 import { Attachment } from "@/lib/types";
+import { useLinearObjects } from "@/hooks/use-linear-objects";
 
 export function Chat({
   id,
@@ -17,7 +18,7 @@ export function Chat({
   initialMessages: Array<UIMessage>;
 }) {
   const [authError, setAuthError] = useState<string | null>(null);
-
+  const {team, project} = useLinearObjects()
   const {
     messages,
     setMessages,
@@ -37,6 +38,8 @@ export function Chat({
           body: {
             id,
             messages,
+            team,
+            project,
             ...body,
           },
         };
