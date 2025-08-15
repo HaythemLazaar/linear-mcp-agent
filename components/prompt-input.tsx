@@ -50,8 +50,6 @@ export function PromptInput({
   };
 
   const submitForm = useCallback(() => {
-    router.replace(`/chat/${chatId}`);
-
     sendMessage({
       role: "user",
       parts: [

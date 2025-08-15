@@ -3,6 +3,14 @@ import { mastra } from "../../../mastra";
 import { createLinearMCP } from "../../../mastra/mcps/linear-mcp";
 import { ServerMCPAuth } from "@/lib/mcp-auth-provider/server-auth";
 import { memory } from "@/mastra/memory";
+import { google } from "@ai-sdk/google";
+import {
+  convertToModelMessages,
+  createUIMessageStream,
+  JsonToSseTransformStream,
+  smoothStream,
+  streamText,
+} from "ai";
 
 export async function POST(req: Request) {
   const { id, message, project, team } = await req.json();
@@ -25,7 +33,6 @@ export async function POST(req: Request) {
         }
       );
     }
-    console.log("**************TEAM**************", team);
     // Create MCP client with OAuth token
     const linearMCP = await createLinearMCP();
     const linearAgent = mastra.getAgent("linearAgent");
@@ -35,13 +42,39 @@ export async function POST(req: Request) {
         threadId: id,
         workingMemory: `Current Linear Project Id: ${project?.id ?? ""}\n- Current Linear Team Id: ${team?.id ?? ""}\n- Current Linear Issue ID:`,
       });
-    const stream = await linearAgent.stream(message, {
-      toolsets: await linearMCP.getToolsets(),
-      resourceId: session?.user.id ?? "",
-      threadId: id,
-    });
 
-    return stream.toUIMessageStreamResponse();
+
+    const res = createUIMessageStream({
+      execute: async ({ writer: dataStream }) => {
+        const stream = await linearAgent.stream(message, {
+          toolsets: await linearMCP.getToolsets(),
+          resourceId: session?.user.id ?? "",
+          threadId: id,
+          abortSignal: req.signal,
+          experimental_transform: smoothStream({
+            delayInMs: 20, // optional: defaults to 10ms
+            chunking: 'line', // optional: defaults to 'word'
+          }),
+          providerOptions: {
+            google: {
+              thinkingConfig: {
+                thinkingBudget: 1024,
+                includeThoughts: true,
+              },
+            },
+          },
+        });
+        stream.consumeStream();
+
+        dataStream.merge(
+          stream.toUIMessageStream({
+            sendReasoning: true,
+          })
+        );
+      },
+    });
+    return new Response(res.pipeThrough(new JsonToSseTransformStream()));
+    // return result.toUIMessageStreamResponse();
   } catch (error) {
     console.error("Chat API error:", error);
     return new Response(JSON.stringify({ error: "Internal server error" }), {

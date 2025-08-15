@@ -51,6 +51,7 @@ export function Chat({
         if (APICallError.isInstance(error)) {
           // Handle the error
           refresh();
+          alert('EEEE')
         }
       },
       onFinish: () => {
