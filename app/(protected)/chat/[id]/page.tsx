@@ -17,7 +17,6 @@ export default async function ChatPage({
   }
   const { id } = await params;
   const thread = await memory.query({ threadId: id });
-  console.log("THREAD:", thread.messages)
   if (!thread || thread.messages.length === 0) notFound();
   return <Chat id={id} initialMessages={thread.uiMessages} />;
 }
