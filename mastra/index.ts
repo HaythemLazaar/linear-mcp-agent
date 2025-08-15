@@ -8,6 +8,6 @@ export const mastra = new Mastra({
   storage: mastraStorage,
   logger: new PinoLogger({
     name: "Mastra",
-    level: "debug",
+    level: "info",
   }),
 });

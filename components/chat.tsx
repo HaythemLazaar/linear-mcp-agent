@@ -1,6 +1,6 @@
 "use client";
 
-import { DefaultChatTransport, type UIMessage } from "ai";
+import { APICallError, DefaultChatTransport, type UIMessage } from "ai";
 import { useChat } from "@ai-sdk/react";
 import { useEffect, useState } from "react";
 import { generateUUID } from "@/lib/utils";
@@ -8,44 +8,62 @@ import { PromptInput } from "./prompt-input";
 import { Messages } from "./messages";
 import { cn } from "@/lib/utils";
 import { Attachment } from "@/lib/types";
+import { useLinearObjects } from "@/hooks/use-linear-objects";
+import { useRouter } from "next/navigation";
+import { Suggestions } from "./suggestions";
+import { useQueryClient } from "@tanstack/react-query";
+import { useAuth } from "@/hooks/use-auth";
 
 export function Chat({
   id,
   initialMessages,
 }: {
   id: string;
-  initialMessages: Array<UIMessage>;
+  initialMessages?: Array<UIMessage>;
 }) {
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
   const [authError, setAuthError] = useState<string | null>(null);
-
-  const {
-    messages,
-    setMessages,
-    sendMessage,
-    status,
-    stop,
-    regenerate,
-  } = useChat({
-    id,
-    experimental_throttle: 100,
-    generateId: generateUUID,
-    messages: initialMessages,
-    transport: new DefaultChatTransport({
-      api: "/api/chat",
-      prepareSendMessagesRequest({ messages, id, body }) {
-        return {
-          body: {
-            id,
-            messages,
-            ...body,
-          },
-        };
+  const { refresh, replace } = useRouter();
+  const { team, project } = useLinearObjects();
+  const { messages, setMessages, sendMessage, status, stop, regenerate } =
+    useChat({
+      id,
+      experimental_throttle: 100,
+      generateId: generateUUID,
+      messages: initialMessages,
+      transport: new DefaultChatTransport({
+        api: "/api/chat",
+        prepareSendMessagesRequest({ messages, id, body }) {
+          return {
+            body: {
+              id,
+              message: messages.at(-1),
+              team,
+              project,
+              ...body,
+            },
+          };
+        },
+      }),
+      onError: (error) => {
+        console.error(error);
+        if (APICallError.isInstance(error)) {
+          // Handle the error
+          refresh();
+        }
       },
-    }),
-    onError: (error) => {
-      console.error(error);
-    },
-  });
+      onFinish: () => {
+        if (!initialMessages){
+          queryClient.invalidateQueries({
+            queryKey: ["threads", user?.id],
+            exact: true,
+          });
+          replace(`/chat/${id}`);
+        }
+          
+      },
+    });
 
   const [attachments, setAttachments] = useState<Array<Attachment>>([]);
 
@@ -74,19 +92,26 @@ export function Chat({
     >
       <div
         className={cn(
-          "flex flex-col min-w-0 flex-1 relative max-w-3xl mx-auto w-full",
-          messages.length === 0 && "justify-center"
+          "flex flex-col min-w-0 flex-1 relative w-full",
+          messages.length === 0 ? "justify-center max-w-4xl mx-auto gap-4" : "max-w-3xl mx-auto"
         )}
       >
-        <Messages
-          chatId={id}
-          status={status}
-          messages={messages}
-          setMessages={setMessages}
-          regenerate={regenerate}
-          authError={authError}
-        />
-        <form className={cn("sticky bottom-0 max-w-3xl mx-auto w-full")}>
+        {messages.length === 0 && (
+          <h1 className="text-xl font-medium text-neutral-900 tracking-tighter">
+            Welcome, what are you planning to build?
+          </h1>
+        )}
+        {messages.length > 0 && (
+          <Messages
+            chatId={id}
+            status={status}
+            messages={messages}
+            setMessages={setMessages}
+            regenerate={regenerate}
+            authError={authError}
+          />
+        )}
+        <form className={cn("sticky bottom-0 w-full")}>
           <PromptInput
             chatId={id}
             status={status}
@@ -94,9 +119,7 @@ export function Chat({
             attachments={attachments}
             setAttachments={setAttachments}
             messages={messages}
-            setMessages={setMessages}
             sendMessage={sendMessage}
-            isAtBottom
           />
         </form>
       </div>

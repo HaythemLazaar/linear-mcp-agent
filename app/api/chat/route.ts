@@ -2,10 +2,11 @@ import { auth } from "@/lib/auth";
 import { mastra } from "../../../mastra";
 import { createLinearMCP } from "../../../mastra/mcps/linear-mcp";
 import { ServerMCPAuth } from "@/lib/mcp-auth-provider/server-auth";
+import { memory } from "@/mastra/memory";
 
 export async function POST(req: Request) {
-  const { id, messages } = await req.json();
-  
+  const { id, message, project, team } = await req.json();
+
   try {
     // Check if user is authenticated
     const isAuthenticated = await ServerMCPAuth.isAuthenticated();
@@ -24,11 +25,17 @@ export async function POST(req: Request) {
         }
       );
     }
-
+    console.log("**************TEAM**************", team);
     // Create MCP client with OAuth token
     const linearMCP = await createLinearMCP();
-    const myAgent = mastra.getAgent("linearAgent");
-    const stream = await myAgent.stream(messages, {
+    const linearAgent = mastra.getAgent("linearAgent");
+    if (!!project || !!team)
+      memory.updateWorkingMemory({
+        resourceId: session?.user.id ?? "",
+        threadId: id,
+        workingMemory: `Current Linear Project Id: ${project?.id ?? ""}\n- Current Linear Team Id: ${team?.id ?? ""}\n- Current Linear Issue ID:`,
+      });
+    const stream = await linearAgent.stream(message, {
       toolsets: await linearMCP.getToolsets(),
       resourceId: session?.user.id ?? "",
       threadId: id,

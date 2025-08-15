@@ -19,6 +19,7 @@ import { useRouter } from "next/navigation";
 import { LinearAuth } from "./linear-auth";
 import { Attachment } from "@/lib/types";
 import { LinearObjectsCombobox } from "./linear-objects-combobox";
+import { Suggestions } from "./suggestions";
 
 export function PromptInput({
   chatId,
@@ -27,10 +28,8 @@ export function PromptInput({
   attachments,
   setAttachments,
   messages,
-  setMessages,
   sendMessage,
   className,
-  isAtBottom = false,
 }: {
   chatId: string;
   status: UseChatHelpers<UIMessage>["status"];
@@ -38,10 +37,8 @@ export function PromptInput({
   attachments: Array<Attachment>;
   setAttachments: Dispatch<SetStateAction<Array<Attachment>>>;
   messages: Array<UIMessage>;
-  setMessages: UseChatHelpers<UIMessage>["setMessages"];
   sendMessage: UseChatHelpers<UIMessage>["sendMessage"];
   className?: string;
-  isAtBottom?: boolean;
 }) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { width } = useWindowSize();
@@ -145,80 +142,104 @@ export function PromptInput({
   );
 
   return (
-    <div
-      className={cn(
-        "rounded-lg bg-gradient-to-r from-indigo-300/20 via-indigo-300/15 to-indigo-300/20 backdrop-blur-sm p-1 border border-indigo-300/30 w-full max-w-4xl mx-auto",
-        isAtBottom && "pb-0 rounded-b-none"
-      )}
-    >
-      <LinearAuth />
+    <div className="relative w-full flex flex-col gap-4 max-w-4xl mx-auto">
       <div
         className={cn(
-          "flex flex-col divide-y divide-neutral-200 w-full border rounded-sm bg-white border-neutral-200 ring ring-neutral-200/20 shadow-sm shadow-indigo-300/50",
-          isAtBottom && "rounded-b-none"
+          "rounded-lg bg-gradient-to-r from-indigo-300/20 via-indigo-300/15 to-indigo-300/20 backdrop-blur-sm p-1 border border-indigo-300/30 w-full",
+          messages.length > 0 && "pb-0 rounded-b-none"
         )}
       >
+        <LinearAuth />
         <div
           className={cn(
-            " p-3 gap-2 flex flex-col relative transition-colors ",
-            className
+            "flex flex-col divide-y divide-neutral-200 w-full border rounded-sm bg-white border-neutral-200 ring ring-neutral-200/20 shadow-sm shadow-indigo-300/50",
+            messages.length > 0 && "rounded-b-none"
           )}
         >
-          <Textarea
-            data-testid="multimodal-input"
-            ref={textareaRef}
-            value={input}
-            onChange={handleInput}
-            placeholder="Tell me your goal..."
-            className="textarea field-sizing-content max-h-29.5 min-h-12 focus-visible:min-h-24 transition-all resize-none font-medium text-neutral-800 p-0 border-none focus-visible:ring-0 shadow-none placeholder:text-neutral-500 rounded-none"
-            style={{
-              scrollbarWidth: "thin",
-            }}
-            rows={2}
-            autoFocus
-            onKeyDown={(event) => {
-              if (
-                event.key === "Enter" &&
-                !event.shiftKey &&
-                !event.nativeEvent.isComposing
-              ) {
-                event.preventDefault();
+          <div
+            className={cn(
+              " p-3 gap-2 flex flex-col relative transition-colors ",
+              className
+            )}
+          >
+            <Textarea
+              data-testid="multimodal-input"
+              ref={textareaRef}
+              value={input}
+              onChange={handleInput}
+              placeholder="Tell me your goal..."
+              className="textarea field-sizing-content max-h-29.5 min-h-12 focus-visible:min-h-24 transition-all resize-none font-medium text-neutral-800 p-0 border-none focus-visible:ring-0 shadow-none placeholder:text-neutral-500 rounded-none"
+              style={{
+                scrollbarWidth: "thin",
+              }}
+              rows={2}
+              autoFocus
+              onKeyDown={(event) => {
+                if (
+                  event.key === "Enter" &&
+                  !event.shiftKey &&
+                  !event.nativeEvent.isComposing
+                ) {
+                  event.preventDefault();
 
-                if (status !== "ready") {
-                  toast.error(
-                    "Please wait for the model to finish its response!"
-                  );
-                } else {
-                  submitForm();
+                  if (status !== "ready") {
+                    toast.error(
+                      "Please wait for the model to finish its response!"
+                    );
+                  } else {
+                    submitForm();
+                  }
                 }
-              }
-            }}
-          />
-          <LinearObjectsCombobox />
-        </div>
-        <div className="flex items-center justify-between p-3">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="size-7 px-2"
-            onClick={(event) => {
-              event.preventDefault();
-              fileInputRef.current?.click();
-            }}
-            disabled={status !== "ready"}
-          >
-            <Paperclip className="size-3.5 text-neutral-900" />
-          </Button>
-          <Button
-            variant="outline"
-            className="h-7 bg-indigo-500 text-white hover:text-white hover:bg-indigo-600 border-indigo-600/50 rounded-sm font-medium tracking-normal text-xs"
-            onClick={status === "submitted" ? stop : submitForm}
-            disabled={input.trim() === "" && attachments.length === 0}
-          >
-            {status === "submitted" ? "Stop" : !isAtBottom ? "Start" : "Send"}
-          </Button>
+              }}
+            />
+            <LinearObjectsCombobox />
+          </div>
+          <div className="flex items-center justify-between p-3">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="size-7 px-2"
+              onClick={(event) => {
+                event.preventDefault();
+                fileInputRef.current?.click();
+              }}
+              disabled={status !== "ready"}
+            >
+              <Paperclip className="size-3.5 text-neutral-900" />
+            </Button>
+            <Button
+              variant="outline"
+              className="h-7 bg-indigo-500 text-white hover:text-white hover:bg-indigo-600 border-indigo-600/50 rounded-sm font-medium tracking-normal text-xs"
+              onClick={status === "submitted" ? stop : submitForm}
+              disabled={input.trim() === "" && attachments.length === 0}
+            >
+              {status === "submitted"
+                ? "Stop"
+                : messages.length === 0
+                  ? "Start"
+                  : "Send"}
+            </Button>
+          </div>
         </div>
       </div>
+      {messages.length === 0 && (
+        <Suggestions
+          suggestions={DEFAULT_SUGGESTIONS}
+          onSelect={(prompt) =>
+            sendMessage({
+              role: "user",
+              parts: [{ type: "text", text: prompt }],
+            })
+          }
+        />
+      )}
     </div>
   );
 }
+
+const DEFAULT_SUGGESTIONS = [
+  "Help me with an issue",
+  "Document an existing project",
+  "Create a new project",
+  "Create a new issue",
+];

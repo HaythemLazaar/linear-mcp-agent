@@ -1,6 +1,5 @@
 import { Memory } from "@mastra/memory";
 import { mastraStorage } from "./storage";
-import { workingMemorySchema } from "./working-memory-schmea";
 
 const memory = new Memory({
   storage: mastraStorage,
@@ -11,7 +10,7 @@ const memory = new Memory({
     workingMemory: {
       enabled: true,
       scope: "thread",
-      schema: workingMemorySchema,
+      template: `Current Linear Project Id:\n- Current Linear Team Id:\n- Current Linear Issue ID:`,
     },
   },
 });
