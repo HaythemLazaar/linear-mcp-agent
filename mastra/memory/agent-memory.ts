@@ -10,7 +10,7 @@ const memory = new Memory({
     workingMemory: {
       enabled: true,
       scope: "thread",
-      template: `Current Linear Project Id:\n- Current Linear Team Id:\n- Current Linear Issue ID:`,
+      template: `- Current Linear Project Id:\n- Current Linear Team Id:\n- Current Linear Issue ID:`,
     },
   },
 });

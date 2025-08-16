@@ -48,21 +48,20 @@ export function Chat({
       }),
       onError: (error) => {
         console.error(error);
+        refresh();
+
         if (APICallError.isInstance(error)) {
           // Handle the error
-          refresh();
-          alert('EEEE')
+          alert("EEEE");
         }
       },
       onFinish: () => {
-        if (!initialMessages){
+        if (!initialMessages) {
           queryClient.invalidateQueries({
             queryKey: ["threads", user?.id],
-            exact: true,
           });
           replace(`/chat/${id}`);
         }
-          
       },
     });
 
@@ -94,7 +93,9 @@ export function Chat({
       <div
         className={cn(
           "flex flex-col min-w-0 flex-1 relative w-full",
-          messages.length === 0 ? "justify-center max-w-4xl mx-auto gap-4" : "max-w-3xl mx-auto"
+          messages.length === 0
+            ? "justify-center max-w-4xl mx-auto gap-4"
+            : "max-w-3xl mx-auto"
         )}
       >
         {messages.length === 0 && (

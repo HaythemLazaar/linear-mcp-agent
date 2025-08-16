@@ -36,7 +36,13 @@ export const linearAgent = new Agent({
       3. Summarize planned change — Example:
         "You want me to create a High priority bug for Team Alpha titled 'Checkout crash in v2.3', assigned to Alice, with label 'backend', in the current sprint. Correct?"
       4. Get confirmation — If yes, proceed with the relevant tool call.
-      5. Confirm execution — Return success message and optionally the updated entity link.
+      5. Make sure that you have the correct types of the arguments of the tools and make sure that it's correct before executing.
+      6. Confirm execution — Return success message and the updated entity link.
+
+      ## Before executing tools
+      1. Retrieve the correct format of parameters or arguments of the tool
+      2. Parse the data or information that you have to match the tool parameters schema
+      3. Don't execute if they are not matching
   `,
   model: google("gemini-2.5-flash"),
   memory,
