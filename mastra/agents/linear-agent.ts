@@ -40,7 +40,7 @@ export const linearAgent = new Agent({
       6. Confirm execution — Return success message and the updated entity link.
 
       ## Before executing tools
-      1. Retrieve the correct format of parameters or arguments of the tool
+      1. Retrieve the correct schema of the tool and get all its details
       2. Parse the data or information that you have to match the tool parameters schema
       3. Don't execute if they are not matching
   `,
