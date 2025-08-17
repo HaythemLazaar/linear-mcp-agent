@@ -185,6 +185,10 @@ const PurePreviewMessage = ({
             })}
           </div>
         </div>
+
+
+        {Math.random()}
+
       </motion.div>
     </AnimatePresence>
   );

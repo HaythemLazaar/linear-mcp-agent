@@ -29,7 +29,7 @@ const filePartSchema = z.object({
 
 const partSchema = z.union([textPartSchema, filePartSchema]);
 
-export const postRequestBodySchema = z.object({
+const postRequestBodySchema = z.object({
   id: z.string().uuid(),
   message: z.object({
     id: z.string().uuid(),
@@ -40,7 +40,7 @@ export const postRequestBodySchema = z.object({
   team: teamSchema.optional().nullable(),
 });
 
-export type PostRequestBody = z.infer<typeof postRequestBodySchema>;
+type PostRequestBody = z.infer<typeof postRequestBodySchema>;
 
 export async function POST(req: Request) {
   let requestBody: PostRequestBody;
