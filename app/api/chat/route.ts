@@ -7,13 +7,12 @@ import {
   convertToModelMessages,
   createUIMessageStream,
   JsonToSseTransformStream,
+  ModelMessage,
   smoothStream,
   stepCountIs,
-  streamText,
 } from "ai";
 import z from "zod";
 import { projectSchema, teamSchema } from "@/lib/schemas";
-import { google } from "@ai-sdk/google";
 
 const textPartSchema = z.object({
   type: z.enum(["text"]),
@@ -100,7 +99,7 @@ export async function POST(req: Request) {
     }
 
     // Add linear specific context
-    let contextOrientedMessage = message;
+    let contextOrientedMessage: ModelMessage | null = null;
     if (!!project || !!team) {
       try {
         await memory.updateWorkingMemory({
@@ -108,62 +107,75 @@ export async function POST(req: Request) {
           threadId: id,
           workingMemory: `- Current Linear Project Id: ${project?.id ?? ""}\n- Current Linear Team Id: ${team?.id ?? ""}\n- Current Linear Issue ID:`,
         });
-        contextOrientedMessage = message;
-      } catch (error) {
+      } catch (_) {
         contextOrientedMessage = {
-          ...message,
-          parts: [
-            ...message.parts.filter((p) => p.type !== "text"),
+          role: "user",
+          content: [
             {
               type: "text",
-              text: `${message.parts.find((p) => p.type === "text")?.text}.${!!project ? ` Project id: ${project.id}` : ""}${!!team ? ` Team id: ${team.id} ` : ""}`,
+              text: `${!!project ? ` Project id: ${project.id}` : ""}${!!team ? ` Team id: ${team.id} ` : ""}`,
             },
           ],
         };
       }
-      console.log(contextOrientedMessage);
     }
 
     // Stream agent response
-    const linearAgent = mastra.getAgent("linearAgent");
-    const stream = await linearAgent.stream(
-      convertToModelMessages([contextOrientedMessage]),
-      {
-        toolsets: linearToolsets,
-        resourceId: session?.user.id ?? "",
-        threadId: id,
-        abortSignal: req.signal,
-        // experimental_transform: smoothStream({
-        //   delayInMs: 20, // optional: defaults to 10ms
-        //   chunking: "line", // optional: defaults to 'word'
-        // }),
-        stopWhen: stepCountIs(5),
-        providerOptions: {
-          google: {
-            thinkingConfig: {
-              thinkingBudget: 1024,
-              includeThoughts: true,
-            },
-          },
-        },
-      }
-    );
+    // const linearAgent = mastra.getAgent("linearAgent");
+    // const stream = await linearAgent.stream(convertToModelMessages([message]), {
+    //   memory: {
+    //     ...memory,
+    //     thread: id,
+    //     resource: session?.user.id ?? "",
+    //   },
+    //   toolsets: linearToolsets,
+    //   abortSignal: req.signal,
+    //   experimental_transform: smoothStream({ chunking: "word" }),
+    //   stopWhen: stepCountIs(5),
+    //   providerOptions: {
+    //     google: {
+    //       thinkingConfig: {
+    //         thinkingBudget: 1024,
+    //         includeThoughts: true,
+    //       },
+    //     },
+    //   },
+    //   context: !!contextOrientedMessage ? [contextOrientedMessage] : [],
+    // });
 
-    const res = createUIMessageStream({
-      execute: ({ writer: dataStream }) => {
-        const result = streamText({
-          model: google("gemini-2.5-flash-lite"),
-          // system: systemPrompt({ selectedChatModel, requestHints }),
-          messages: convertToModelMessages([message]),
-          stopWhen: stepCountIs(5),
-          experimental_transform: smoothStream({ chunking: "word" }),
-        });
+    const stream = createUIMessageStream({
+      execute: async ({ writer }) => {
+        const linearAgent = mastra.getAgent("linearAgent");
+        const result = await linearAgent.stream(
+          convertToModelMessages([message]),
+          {
+            memory: {
+              ...memory,
+              thread: id,
+              resource: session?.user.id ?? "",
+            },
+            toolsets: linearToolsets,
+            abortSignal: req.signal,
+            experimental_transform: smoothStream({ chunking: "word" }),
+            stopWhen: stepCountIs(5),
+            providerOptions: {
+              google: {
+                thinkingConfig: {
+                  thinkingBudget: 1024,
+                  includeThoughts: true,
+                },
+              },
+            },
+            context: !!contextOrientedMessage ? [contextOrientedMessage] : [],
+          }
+        );
 
         result.consumeStream();
 
-        dataStream.merge(
+        writer.merge(
           result.toUIMessageStream({
             sendReasoning: true,
+            sendSources: true,
           })
         );
       },
@@ -172,9 +184,9 @@ export async function POST(req: Request) {
       },
     });
 
-    return new Response(res.pipeThrough(new JsonToSseTransformStream()));
+    return new Response(stream.pipeThrough(new JsonToSseTransformStream()));
 
-    return stream.toUIMessageStreamResponse();
+    // return stream.toUIMessageStreamResponse();
   } catch (error) {
     console.error("Chat API error:", error);
     return new Response(JSON.stringify({ error: "Internal server error" }), {

@@ -4,6 +4,7 @@ import { mastraStorage } from "./storage";
 const memory = new Memory({
   storage: mastraStorage,
   options: {
+    lastMessages: 10,
     threads: {
       generateTitle: true, // Enable automatic title generation
     },

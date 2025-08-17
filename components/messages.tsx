@@ -5,9 +5,10 @@ import equal from "fast-deep-equal";
 import type { UseChatHelpers } from "@ai-sdk/react";
 import { motion } from "framer-motion";
 import { useMessages } from "@/hooks/use-messages";
-import { cn } from "@/lib/utils";
+import { cn, sanitizeText } from "@/lib/utils";
 import { LinearAuth } from "./linear-auth";
 import { Alert, AlertDescription } from "./ui/alert";
+import { Markdown } from "./markdown";
 
 interface MessagesProps {
   chatId: string;
@@ -50,7 +51,7 @@ function PureMessages({
           key={message.id}
           chatId={chatId}
           message={message}
-          isLoading={status === "streaming" && messages.length - 1 === index}
+          // isLoading={status === "streaming" && messages.length - 1 === index}
           setMessages={setMessages}
           regenerate={regenerate}
           requiresScrollPadding={
@@ -58,6 +59,19 @@ function PureMessages({
           }
         />
       ))}
+
+      {/* {messages[messages.length - 1].parts.map(
+        (part, i) =>
+          part.type === "text" && (
+            <div
+              data-testid="message-content"
+              key={i}
+              className={cn("flex flex-col gap-4")}
+            >
+              <Markdown>{sanitizeText(part.text)}</Markdown>
+            </div>
+          )
+      )} */}
 
       {authError && (
         <div className="w-full mx-auto max-w-3xl px-4">

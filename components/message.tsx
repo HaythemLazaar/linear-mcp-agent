@@ -20,16 +20,16 @@ import {
   AccordionContent,
 } from "./ui/accordion";
 
-const PurePreviewMessage = ({
+export const PreviewMessage = ({
   message,
-  isLoading,
+  // isLoading,
   setMessages,
   regenerate,
   requiresScrollPadding,
 }: {
   chatId: string;
   message: UIMessage;
-  isLoading: boolean;
+  // isLoading: boolean;
   setMessages: UseChatHelpers<UIMessage>["setMessages"];
   regenerate: UseChatHelpers<UIMessage>["regenerate"];
   requiresScrollPadding: boolean;
@@ -88,7 +88,7 @@ const PurePreviewMessage = ({
                 return (
                   <MessageReasoning
                     key={key}
-                    isLoading={isLoading}
+                    isLoading={false}
                     reasoning={part.text}
                   />
                 );
@@ -185,27 +185,23 @@ const PurePreviewMessage = ({
             })}
           </div>
         </div>
-
-
-        {Math.random()}
-
       </motion.div>
     </AnimatePresence>
   );
 };
 
-export const PreviewMessage = memo(
-  PurePreviewMessage,
-  (prevProps, nextProps) => {
-    if (prevProps.isLoading !== nextProps.isLoading) return false;
-    if (prevProps.message.id !== nextProps.message.id) return false;
-    if (prevProps.requiresScrollPadding !== nextProps.requiresScrollPadding)
-      return false;
-    if (!equal(prevProps.message.parts, nextProps.message.parts)) return false;
+// export const PreviewMessage = memo(
+//   PurePreviewMessage,
+//   (prevProps, nextProps) => {
+//     // if (prevProps.isLoading !== nextProps.isLoading) return false;
+//     if (prevProps.message.id !== nextProps.message.id) return false;
+//     if (prevProps.requiresScrollPadding !== nextProps.requiresScrollPadding)
+//       return false;
+//     if (!equal(prevProps.message.parts, nextProps.message.parts)) return false;
 
-    return true;
-  }
-);
+//     return true;
+//   }
+// );
 
 export const ThinkingMessage = () => {
   const role = "assistant";
