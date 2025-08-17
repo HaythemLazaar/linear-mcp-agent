@@ -40,13 +40,13 @@ const components: Partial<Components> = {
       </span>
     );
   },
-  a: ({ node, children, ...props }) => {
+  a: ({ node, children, href, ...props }) => {
     return (
-      // @ts-expect-error
       <Link
         className="text-blue-500 hover:underline"
         target="_blank"
         rel="noreferrer"
+        href={href ?? ""}
         {...props}
       >
         {children}
