@@ -9,7 +9,7 @@ export default async function ChatPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const session = auth.api.getSession({
+  const session = await auth.api.getSession({
     headers: await headers(),
   });
   if (!session) {

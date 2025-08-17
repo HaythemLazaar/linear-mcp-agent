@@ -1,18 +1,19 @@
 import { auth } from "@/lib/auth";
-import { mastra } from "../../../mastra";
-import { createLinearMCP } from "../../../mastra/mcps/linear-mcp";
+import { mastra } from "@/mastra";
+import { createLinearMCP } from "@/mastra/mcps/linear-mcp";
 import { ServerMCPAuth } from "@/lib/mcp-auth-provider/server-auth";
 import { memory } from "@/mastra/memory";
-import { google } from "@ai-sdk/google";
 import {
   convertToModelMessages,
   createUIMessageStream,
   JsonToSseTransformStream,
   smoothStream,
+  stepCountIs,
   streamText,
 } from "ai";
 import z from "zod";
 import { projectSchema, teamSchema } from "@/lib/schemas";
+import { google } from "@ai-sdk/google";
 
 const textPartSchema = z.object({
   type: z.enum(["text"]),
@@ -79,7 +80,8 @@ export async function POST(req: Request) {
         }
       );
     }
-    // Create MCP client with OAuth token
+
+    // Create MCP client with OAuth token & check for oauth
     const linearMCP = await createLinearMCP();
     let linearToolsets;
     try {
@@ -96,7 +98,8 @@ export async function POST(req: Request) {
         }
       );
     }
-    const linearAgent = mastra.getAgent("linearAgent");
+
+    // Add linear specific context
     let contextOrientedMessage = message;
     if (!!project || !!team) {
       try {
@@ -121,6 +124,8 @@ export async function POST(req: Request) {
       console.log(contextOrientedMessage);
     }
 
+    // Stream agent response
+    const linearAgent = mastra.getAgent("linearAgent");
     const stream = await linearAgent.stream(
       convertToModelMessages([contextOrientedMessage]),
       {
@@ -128,52 +133,47 @@ export async function POST(req: Request) {
         resourceId: session?.user.id ?? "",
         threadId: id,
         abortSignal: req.signal,
-        experimental_transform: smoothStream({
-          delayInMs: 20, // optional: defaults to 10ms
-          chunking: "line", // optional: defaults to 'word'
-        }),
-        maxSteps: 10,
-        // providerOptions: {
-        //   google: {
-        //     thinkingConfig: {
-        //       thinkingBudget: 1024,
-        //       includeThoughts: true,
-        //     },
-        //   },
-        // },
+        // experimental_transform: smoothStream({
+        //   delayInMs: 20, // optional: defaults to 10ms
+        //   chunking: "line", // optional: defaults to 'word'
+        // }),
+        stopWhen: stepCountIs(5),
+        providerOptions: {
+          google: {
+            thinkingConfig: {
+              thinkingBudget: 1024,
+              includeThoughts: true,
+            },
+          },
+        },
       }
     );
 
-    // const res = createUIMessageStream({
-    //   execute: async ({ writer: dataStream }) => {
-    //     const stream = await linearAgent.stream(message, {
-    //       toolsets: await linearMCP.getToolsets(),
-    //       resourceId: session?.user.id ?? "",
-    //       threadId: id,
-    //       abortSignal: req.signal,
-    //       experimental_transform: smoothStream({
-    //         delayInMs: 20, // optional: defaults to 10ms
-    //         chunking: 'line', // optional: defaults to 'word'
-    //       }),
-    //       providerOptions: {
-    //         google: {
-    //           thinkingConfig: {
-    //             thinkingBudget: 1024,
-    //             includeThoughts: true,
-    //           },
-    //         },
-    //       },
-    //     });
-    //     stream.consumeStream();
+    const res = createUIMessageStream({
+      execute: ({ writer: dataStream }) => {
+        const result = streamText({
+          model: google("gemini-2.5-flash-lite"),
+          // system: systemPrompt({ selectedChatModel, requestHints }),
+          messages: convertToModelMessages([message]),
+          stopWhen: stepCountIs(5),
+          experimental_transform: smoothStream({ chunking: "word" }),
+        });
 
-    //     dataStream.merge(
-    //       stream.toUIMessageStream({
-    //         sendReasoning: true,
-    //       })
-    //     );
-    //   },
-    // });
-    // return new Response(res.pipeThrough(new JsonToSseTransformStream()));
+        result.consumeStream();
+
+        dataStream.merge(
+          result.toUIMessageStream({
+            sendReasoning: true,
+          })
+        );
+      },
+      onError: () => {
+        return "Oops, an error occurred!";
+      },
+    });
+
+    return new Response(res.pipeThrough(new JsonToSseTransformStream()));
+
     return stream.toUIMessageStreamResponse();
   } catch (error) {
     console.error("Chat API error:", error);

@@ -57,14 +57,6 @@ const PurePreviewMessage = ({
             }
           )}
         >
-          {/* {message.role === 'assistant' && (
-            <div className="size-8 flex items-center rounded-full justify-center ring-1 shrink-0 ring-border bg-background">
-              <div className="translate-y-px">
-                <Sparkles size={14} />
-              </div>
-            </div>
-          )} */}
-
           <div
             className={cn("flex flex-col gap-4 w-full", {
               "min-h-96": message.role === "assistant" && requiresScrollPadding,
@@ -191,16 +183,6 @@ const PurePreviewMessage = ({
                   );
               }
             })}
-
-            {/* {!isReadonly && (
-              <MessageActions
-                key={`action-${message.id}`}
-                chatId={chatId}
-                message={message}
-                vote={vote}
-                isLoading={isLoading}
-              />
-            )} */}
           </div>
         </div>
       </motion.div>
