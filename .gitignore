@@ -43,3 +43,6 @@ next-env.d.ts
 
 # mastra
 .mastra
+
+# Keep the generated Prisma Client + query engine out of version control
+/lib/generated/prisma
