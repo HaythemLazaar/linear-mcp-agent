@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
+    "postinstall": "prisma generate --no-engine",
     "start": "next start",
     "lint": "next lint",
     "dev:mastra": "mastra dev --dir mastra",
