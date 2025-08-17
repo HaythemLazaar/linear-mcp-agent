@@ -20,16 +20,16 @@ import {
   AccordionContent,
 } from "./ui/accordion";
 
-const PurePreviewMessage = ({
+export const PreviewMessage = ({
   message,
-  isLoading,
+  // isLoading,
   setMessages,
   regenerate,
   requiresScrollPadding,
 }: {
   chatId: string;
   message: UIMessage;
-  isLoading: boolean;
+  // isLoading: boolean;
   setMessages: UseChatHelpers<UIMessage>["setMessages"];
   regenerate: UseChatHelpers<UIMessage>["regenerate"];
   requiresScrollPadding: boolean;
@@ -57,14 +57,6 @@ const PurePreviewMessage = ({
             }
           )}
         >
-          {/* {message.role === 'assistant' && (
-            <div className="size-8 flex items-center rounded-full justify-center ring-1 shrink-0 ring-border bg-background">
-              <div className="translate-y-px">
-                <Sparkles size={14} />
-              </div>
-            </div>
-          )} */}
-
           <div
             className={cn("flex flex-col gap-4 w-full", {
               "min-h-96": message.role === "assistant" && requiresScrollPadding,
@@ -96,7 +88,7 @@ const PurePreviewMessage = ({
                 return (
                   <MessageReasoning
                     key={key}
-                    isLoading={isLoading}
+                    isLoading={false}
                     reasoning={part.text}
                   />
                 );
@@ -191,16 +183,6 @@ const PurePreviewMessage = ({
                   );
               }
             })}
-
-            {/* {!isReadonly && (
-              <MessageActions
-                key={`action-${message.id}`}
-                chatId={chatId}
-                message={message}
-                vote={vote}
-                isLoading={isLoading}
-              />
-            )} */}
           </div>
         </div>
       </motion.div>
@@ -208,18 +190,18 @@ const PurePreviewMessage = ({
   );
 };
 
-export const PreviewMessage = memo(
-  PurePreviewMessage,
-  (prevProps, nextProps) => {
-    if (prevProps.isLoading !== nextProps.isLoading) return false;
-    if (prevProps.message.id !== nextProps.message.id) return false;
-    if (prevProps.requiresScrollPadding !== nextProps.requiresScrollPadding)
-      return false;
-    if (!equal(prevProps.message.parts, nextProps.message.parts)) return false;
+// export const PreviewMessage = memo(
+//   PurePreviewMessage,
+//   (prevProps, nextProps) => {
+//     // if (prevProps.isLoading !== nextProps.isLoading) return false;
+//     if (prevProps.message.id !== nextProps.message.id) return false;
+//     if (prevProps.requiresScrollPadding !== nextProps.requiresScrollPadding)
+//       return false;
+//     if (!equal(prevProps.message.parts, nextProps.message.parts)) return false;
 
-    return true;
-  }
-);
+//     return true;
+//   }
+// );
 
 export const ThinkingMessage = () => {
   const role = "assistant";

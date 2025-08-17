@@ -1,5 +1,5 @@
-import { PrismaClient } from '../lib/generated/prisma'
 import { PrismaNeon } from '@prisma/adapter-neon'
+import { PrismaClient } from './generated/prisma/client'
 
 // For Neon serverless environments (Vercel, Cloudflare Workers, etc.)
 const connectionString = process.env.DATABASE_URL!
