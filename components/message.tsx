@@ -146,7 +146,9 @@ export const PreviewMessage = ({
                 }
               }
 
-              if (type.startsWith("tool-")) {
+              if (type === "tool-updateWorkingMemory") {
+                return null;
+              } else if (type.startsWith("tool-")) {
                 const { toolCallId, state, output } = part as DynamicToolUIPart;
 
                 if (state === "output-available") {

@@ -3,8 +3,8 @@ import z from "zod";
 const teamSchema = z.object({
   id: z.string(),
   name: z.string(),
-  createdAt: z.string().datetime(),
-  updatedAt: z.string().datetime(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
 });
 
 const teamsSchema = z.object({
@@ -14,8 +14,8 @@ const teamsSchema = z.object({
 const projectSchema = z.object({
   id: z.string(),
   name: z.string(),
-  createdAt: z.string().datetime(),
-  updatedAt: z.string().datetime(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
   url: z.string().url().optional(),
   description: z.string().optional(),
   summary: z.string().optional(),

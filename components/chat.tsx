@@ -22,7 +22,7 @@ export function Chat({
   initialMessages?: Array<UIMessage>;
 }) {
   const queryClient = useQueryClient();
-  const { user } = useAuth();
+  const { user, loading, checkAuth } = useAuth();
   const [authError, setAuthError] = useState<string | null>(null);
   const { refresh, replace } = useRouter();
   const { team, project } = useLinearObjects();
@@ -55,12 +55,14 @@ export function Chat({
           alert("EEEE");
         }
       },
-      onFinish: () => {
+      onFinish: async () => {
         if (!initialMessages) {
-          queryClient.invalidateQueries({
-            queryKey: ["threads", user?.id],
+          await checkAuth().then(() => {
+            queryClient.invalidateQueries({
+              queryKey: ["threads", user?.id],
+            });
+            replace(`/chat/${id}`);
           });
-          replace(`/chat/${id}`);
         }
       },
     });
@@ -69,7 +71,7 @@ export function Chat({
 
   // Check authentication status on mount
   useEffect(() => {
-    const checkAuth = async () => {
+    const checkLinearAuth = async () => {
       try {
         const response = await fetch("/api/auth/linear/status");
         const data = await response.json();
@@ -81,7 +83,7 @@ export function Chat({
       }
     };
 
-    checkAuth();
+    checkLinearAuth();
   }, []);
 
   return (
