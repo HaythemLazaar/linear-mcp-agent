@@ -1,6 +1,6 @@
 import type { UIMessage } from "ai";
 import { PreviewMessage, ThinkingMessage } from "./message";
-import { memo } from "react";
+import { memo, useEffect, useState } from "react";
 import equal from "fast-deep-equal";
 import type { UseChatHelpers } from "@ai-sdk/react";
 import { motion } from "framer-motion";
@@ -10,6 +10,7 @@ import { LinearAuth } from "./linear-auth";
 import { Alert, AlertDescription } from "./ui/alert";
 import { Button } from "./ui/button";
 import { ArrowDown } from "lucide-react";
+import { useScrollToBottom } from "@/hooks/use-scroll-to-bottom";
 
 interface MessagesProps {
   chatId: string;
@@ -31,15 +32,27 @@ function PureMessages({
   const {
     containerRef: messagesContainerRef,
     endRef: messagesEndRef,
+    isAtBottom,
     onViewportEnter,
     onViewportLeave,
     scrollToBottom,
-    hasSentMessage,
-    isAtBottom,
-  } = useMessages({
-    chatId,
-    status,
-  });
+  } = useScrollToBottom();
+
+  const [hasSentMessage, setHasSentMessage] = useState(false);
+
+  useEffect(() => {
+    if (chatId) {
+      scrollToBottom("instant");
+      setHasSentMessage(false);
+    }
+  }, [chatId, scrollToBottom]);
+
+  useEffect(() => {
+    if (status === "submitted" || status === "streaming") {
+      setHasSentMessage(true);
+      if (isAtBottom) scrollToBottom();
+    } else setHasSentMessage(false);
+  }, [status, messages]);
 
   return (
     <div
