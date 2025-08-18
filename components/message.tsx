@@ -22,14 +22,12 @@ import {
 
 export const PreviewMessage = ({
   message,
-  // isLoading,
   setMessages,
   regenerate,
   requiresScrollPadding,
 }: {
   chatId: string;
   message: UIMessage;
-  // isLoading: boolean;
   setMessages: UseChatHelpers<UIMessage>["setMessages"];
   regenerate: UseChatHelpers<UIMessage>["regenerate"];
   requiresScrollPadding: boolean;
@@ -85,13 +83,7 @@ export const PreviewMessage = ({
               const key = `message-${message.id}-part-${index}`;
 
               if (type === "reasoning") {
-                return (
-                  <MessageReasoning
-                    key={key}
-                    isLoading={false}
-                    reasoning={part.text}
-                  />
-                );
+                return <MessageReasoning key={key} reasoning={part.text} />;
               }
 
               if (type === "text") {
@@ -216,22 +208,10 @@ export const ThinkingMessage = () => {
       animate={{ y: 0, opacity: 1, transition: { delay: 1 } }}
       data-role={role}
     >
-      <div
-        className={cn(
-          "flex gap-4 group-data-[role=user]/message:px-3 w-full group-data-[role=user]/message:w-fit group-data-[role=user]/message:ml-auto group-data-[role=user]/message:max-w-2xl group-data-[role=user]/message:py-2 rounded-xl",
-          {
-            "group-data-[role=user]/message:bg-muted": true,
-          }
-        )}
-      >
-        <div className="size-8 flex items-center rounded-full justify-center ring-1 shrink-0 ring-border">
-          <Sparkles size={14} />
-        </div>
-
-        <div className="flex flex-col gap-2 w-full">
-          <div className="flex flex-col gap-4 text-muted-foreground">
-            Hmm...
-          </div>
+      <div className="flex flex-row gap-2 items-center">
+        <div className="font-medium">Reasoning</div>
+        <div className="animate-spin">
+          <Loader2 />
         </div>
       </div>
     </motion.div>

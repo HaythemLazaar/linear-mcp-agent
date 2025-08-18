@@ -9,7 +9,8 @@
     "start": "next start",
     "lint": "next lint",
     "dev:mastra": "mastra dev --dir mastra",
-    "build:mastra": "mastra build --dir mastra"
+    "build:mastra": "mastra build --dir mastra",
+    "db:migrate" : "prisma migrate dev"
   },
   "dependencies": {
     "@ai-sdk/google": "2.0.3",

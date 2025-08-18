@@ -4,7 +4,6 @@ import { memo, useEffect, useState } from "react";
 import equal from "fast-deep-equal";
 import type { UseChatHelpers } from "@ai-sdk/react";
 import { motion } from "framer-motion";
-import { useMessages } from "@/hooks/use-messages";
 import { cn } from "@/lib/utils";
 import { LinearAuth } from "./linear-auth";
 import { Alert, AlertDescription } from "./ui/alert";
@@ -43,16 +42,15 @@ function PureMessages({
   useEffect(() => {
     if (chatId) {
       scrollToBottom("instant");
-      setHasSentMessage(false);
     }
   }, [chatId, scrollToBottom]);
 
   useEffect(() => {
-    if (status === "submitted" || status === "streaming") {
+    if (status === "submitted") {
       setHasSentMessage(true);
-      if (isAtBottom) scrollToBottom();
-    } else setHasSentMessage(false);
-  }, [status, messages]);
+      scrollToBottom();
+    }
+  }, [status, scrollToBottom]);
 
   return (
     <div
@@ -67,7 +65,6 @@ function PureMessages({
           key={message.id}
           chatId={chatId}
           message={message}
-          // isLoading={status === "streaming" && messages.length - 1 === index}
           setMessages={setMessages}
           regenerate={regenerate}
           requiresScrollPadding={
@@ -95,7 +92,7 @@ function PureMessages({
         size="icon"
         className={cn(
           "sticky bottom-56 rounded-full shadow-2xl mx-auto transition-all border-indigo-200 text-indigo-700",
-          isAtBottom ? "opacity-0 absolute" : "opacity-100"
+          isAtBottom ? "opacity-0 pointer-events-none" : "opacity-100"
         )}
         onClick={() => scrollToBottom()}
       >
@@ -104,7 +101,8 @@ function PureMessages({
 
       <motion.div
         ref={messagesEndRef}
-        className="shrink-0 min-w-[24px] min-h-[24px]"
+        className="absolute -bottom-32 shrink-0 min-w-[24px] min-h-[24px]"
+        aria-hidden
         onViewportLeave={onViewportLeave}
         onViewportEnter={onViewportEnter}
       />
