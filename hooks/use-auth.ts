@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 
@@ -17,11 +17,7 @@ export function useAuth() {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  useEffect(() => {
-    checkAuth();
-  }, []);
-
-  const checkAuth = async () => {
+  const checkAuth = useCallback(async () => {
     try {
       const { data: session } = await authClient.getSession();
       if (session?.user) {
@@ -34,9 +30,13 @@ export function useAuth() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const login = async (email: string, password: string) => {
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
+
+  const login = useCallback(async (email: string, password: string) => {
     try {
       const { data, error } = await authClient.signIn.email({
         email,
@@ -57,9 +57,9 @@ export function useAuth() {
     } catch (error) {
       return { success: false, error: "An error occurred" };
     }
-  };
+  }, [router]);
 
-  const signup = async (userData: {
+  const signup = useCallback(async (userData: {
     email: string;
     password: string;
     firstName?: string;
@@ -88,9 +88,9 @@ export function useAuth() {
     } catch (error) {
       return { success: false, error: "An error occurred" };
     }
-  };
+  }, [router]);
 
-  const logout = async () => {
+  const logout = useCallback(async () => {
     try {
       await authClient.signOut();
       setUser(null);
@@ -98,14 +98,17 @@ export function useAuth() {
     } catch (error) {
       console.error("Logout error:", error);
     }
-  };
+  }, [router]);
 
-  return {
+  // Memoize the return value to prevent unnecessary re-renders
+  const authData = useMemo(() => ({
     user,
     loading,
     login,
     signup,
     logout,
     checkAuth,
-  };
+  }), [user, loading, login, signup, logout, checkAuth]);
+
+  return authData;
 }

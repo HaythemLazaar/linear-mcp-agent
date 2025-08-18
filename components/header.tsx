@@ -6,6 +6,7 @@ import { UserMenu } from "./user-menu";
 export function Header() {
   return (
     <header className="h-12 max-w-screen bg-neutral-50 sticky top-0 z-50">
+      <div className="absolute top-12 inset-x-0 z-10 w-full h-8 bg-[radial-gradient(100%_50%_at_50%_0%,#FAFAFA_40%,transparent_80%)] pointer-events-none" />
       <div className="flex items-center h-full px-3 w-full">
         <div className="flex items-center gap-2 flex-1">
           <SidebarTrigger>

@@ -13,6 +13,7 @@ import { useRouter } from "next/navigation";
 import { Suggestions } from "./suggestions";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
+import { authClient } from "@/lib/auth-client";
 
 export function Chat({
   id,
@@ -22,7 +23,7 @@ export function Chat({
   initialMessages?: Array<UIMessage>;
 }) {
   const queryClient = useQueryClient();
-  const { user } = useAuth();
+  const { data: session } = authClient.useSession();
   const [authError, setAuthError] = useState<string | null>(null);
   const { refresh, replace } = useRouter();
   const { team, project } = useLinearObjects();
@@ -55,10 +56,10 @@ export function Chat({
           alert("EEEE");
         }
       },
-      onFinish: () => {
+      onFinish: async () => {
         if (!initialMessages) {
           queryClient.invalidateQueries({
-            queryKey: ["threads", user?.id],
+            queryKey: ["threads", session?.user?.id],
           });
           replace(`/chat/${id}`);
         }
@@ -69,7 +70,7 @@ export function Chat({
 
   // Check authentication status on mount
   useEffect(() => {
-    const checkAuth = async () => {
+    const checkLinearAuth = async () => {
       try {
         const response = await fetch("/api/auth/linear/status");
         const data = await response.json();
@@ -81,7 +82,7 @@ export function Chat({
       }
     };
 
-    checkAuth();
+    checkLinearAuth();
   }, []);
 
   return (

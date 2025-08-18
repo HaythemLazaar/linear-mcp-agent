@@ -27,7 +27,7 @@ import { TbCube, TbUserPentagon } from "react-icons/tb";
 import { projectsSchema, teamsSchema } from "@/lib/schemas";
 import { LinearProject, LinearTeam } from "@/lib/types";
 import { useLinearObjects } from "@/hooks/use-linear-objects";
-import { BiLoaderCircle, BiSolidRightArrow } from "react-icons/bi";
+import { BiLoaderCircle, BiSolidRightArrow, BiAt } from "react-icons/bi";
 import { MdOutlineError } from "react-icons/md";
 import { cn } from "@/lib/utils";
 
@@ -66,9 +66,9 @@ export function LinearObjectsCombobox() {
           <Button
             variant="outline"
             size="sm"
-            className="h-6 rounded-sm font-normal tracking-normal text-xs !px-2 text-neutral-800 gap-1 border-neutral-300"
+            className="h-6 rounded-sm font-normal tracking-normal text-xs !px-2 text-neutral-600 gap-1 border-neutral-300"
           >
-            <Plus className="size-3.5" />
+            <BiAt className="size-3.5" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-[200px]">

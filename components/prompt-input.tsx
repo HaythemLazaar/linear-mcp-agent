@@ -15,7 +15,6 @@ import { UseChatHelpers } from "@ai-sdk/react";
 import { UIMessage } from "ai";
 import { toast } from "sonner";
 import { useWindowSize } from "usehooks-ts";
-import { useRouter } from "next/navigation";
 import { LinearAuth } from "./linear-auth";
 import { Attachment } from "@/lib/types";
 import { LinearObjectsCombobox } from "./linear-objects-combobox";
@@ -42,7 +41,6 @@ export function PromptInput({
 }) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { width } = useWindowSize();
-  const router = useRouter();
   const [input, setInput] = useState<string>("");
 
   const handleInput = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -79,8 +77,6 @@ export function PromptInput({
     sendMessage,
     setAttachments,
     width,
-    chatId,
-    router,
   ]);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -166,7 +162,7 @@ export function PromptInput({
               value={input}
               onChange={handleInput}
               placeholder="Tell me your goal..."
-              className="textarea field-sizing-content max-h-29.5 min-h-12 focus-visible:min-h-24 transition-all resize-none font-medium text-neutral-800 p-0 border-none focus-visible:ring-0 shadow-none placeholder:text-neutral-500 rounded-none"
+              className="textarea field-sizing-content max-h-40 min-h-12 transition-all resize-none font-medium text-neutral-800 p-0 border-none focus-visible:ring-0 shadow-none placeholder:text-neutral-500 rounded-none"
               style={{
                 scrollbarWidth: "thin",
               }}

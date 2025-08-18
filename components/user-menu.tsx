@@ -13,12 +13,20 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "./ui/button";
 import Link from "next/link";
+import { Loader2 } from "lucide-react";
 
 export function UserMenu() {
-  const { user, logout } = useAuth();
+  const { user, logout, loading } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
 
-  if (!user) {
+  if (loading)
+    return (
+      <div className="size-7 flex items-center justify-center">
+        <Loader2 className="text-indigo-400 size-6 animate-spin" />
+      </div>
+    );
+
+  if (!user)
     return (
       <Button
         variant="outline"
@@ -28,7 +36,6 @@ export function UserMenu() {
         <Link href="/login">Login</Link>
       </Button>
     );
-  }
 
   const handleLogout = async () => {
     setIsLoading(true);

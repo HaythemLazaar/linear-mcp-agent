@@ -22,14 +22,12 @@ import {
 
 export const PreviewMessage = ({
   message,
-  // isLoading,
   setMessages,
   regenerate,
   requiresScrollPadding,
 }: {
   chatId: string;
   message: UIMessage;
-  // isLoading: boolean;
   setMessages: UseChatHelpers<UIMessage>["setMessages"];
   regenerate: UseChatHelpers<UIMessage>["regenerate"];
   requiresScrollPadding: boolean;
@@ -59,7 +57,7 @@ export const PreviewMessage = ({
         >
           <div
             className={cn("flex flex-col gap-4 w-full", {
-              "min-h-96": message.role === "assistant" && requiresScrollPadding,
+              "min-h-[calc(100vh-25rem)]": message.role === "assistant" && requiresScrollPadding,
             })}
           >
             {attachmentsFromMessage.length > 0 && (
@@ -85,13 +83,7 @@ export const PreviewMessage = ({
               const key = `message-${message.id}-part-${index}`;
 
               if (type === "reasoning") {
-                return (
-                  <MessageReasoning
-                    key={key}
-                    isLoading={false}
-                    reasoning={part.text}
-                  />
-                );
+                return <MessageReasoning key={key} reasoning={part.text} />;
               }
 
               if (type === "text") {
@@ -146,7 +138,9 @@ export const PreviewMessage = ({
                 }
               }
 
-              if (type.startsWith("tool-")) {
+              if (type === "tool-updateWorkingMemory") {
+                return null;
+              } else if (type.startsWith("tool-")) {
                 const { toolCallId, state, output } = part as DynamicToolUIPart;
 
                 if (state === "output-available") {
@@ -209,27 +203,15 @@ export const ThinkingMessage = () => {
   return (
     <motion.div
       data-testid="message-assistant-loading"
-      className="w-full mx-auto max-w-3xl px-4 group/message min-h-96"
+      className="w-full mx-auto max-w-3xl px-4 group/message min-h-[calc(100vh-25rem)]"
       initial={{ y: 5, opacity: 0 }}
       animate={{ y: 0, opacity: 1, transition: { delay: 1 } }}
       data-role={role}
     >
-      <div
-        className={cn(
-          "flex gap-4 group-data-[role=user]/message:px-3 w-full group-data-[role=user]/message:w-fit group-data-[role=user]/message:ml-auto group-data-[role=user]/message:max-w-2xl group-data-[role=user]/message:py-2 rounded-xl",
-          {
-            "group-data-[role=user]/message:bg-muted": true,
-          }
-        )}
-      >
-        <div className="size-8 flex items-center rounded-full justify-center ring-1 shrink-0 ring-border">
-          <Sparkles size={14} />
-        </div>
-
-        <div className="flex flex-col gap-2 w-full">
-          <div className="flex flex-col gap-4 text-muted-foreground">
-            Hmm...
-          </div>
+      <div className="flex flex-row gap-2 items-center">
+        <div className="font-medium">Reasoning</div>
+        <div className="animate-spin">
+          <Loader2 />
         </div>
       </div>
     </motion.div>

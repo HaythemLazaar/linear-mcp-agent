@@ -1,14 +1,15 @@
 import type { UIMessage } from "ai";
 import { PreviewMessage, ThinkingMessage } from "./message";
-import { memo } from "react";
+import { memo, useEffect, useState } from "react";
 import equal from "fast-deep-equal";
 import type { UseChatHelpers } from "@ai-sdk/react";
 import { motion } from "framer-motion";
-import { useMessages } from "@/hooks/use-messages";
-import { cn, sanitizeText } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { LinearAuth } from "./linear-auth";
 import { Alert, AlertDescription } from "./ui/alert";
-import { Markdown } from "./markdown";
+import { Button } from "./ui/button";
+import { ArrowDown } from "lucide-react";
+import { useScrollToBottom } from "@/hooks/use-scroll-to-bottom";
 
 interface MessagesProps {
   chatId: string;
@@ -30,13 +31,26 @@ function PureMessages({
   const {
     containerRef: messagesContainerRef,
     endRef: messagesEndRef,
+    isAtBottom,
     onViewportEnter,
     onViewportLeave,
-    hasSentMessage,
-  } = useMessages({
-    chatId,
-    status,
-  });
+    scrollToBottom,
+  } = useScrollToBottom();
+
+  const [hasSentMessage, setHasSentMessage] = useState(false);
+
+  useEffect(() => {
+    if (chatId) {
+      scrollToBottom("instant");
+    }
+  }, [chatId, scrollToBottom]);
+
+  useEffect(() => {
+    if (status === "submitted") {
+      setHasSentMessage(true);
+      scrollToBottom();
+    }
+  }, [status, scrollToBottom]);
 
   return (
     <div
@@ -51,7 +65,6 @@ function PureMessages({
           key={message.id}
           chatId={chatId}
           message={message}
-          // isLoading={status === "streaming" && messages.length - 1 === index}
           setMessages={setMessages}
           regenerate={regenerate}
           requiresScrollPadding={
@@ -59,19 +72,6 @@ function PureMessages({
           }
         />
       ))}
-
-      {/* {messages[messages.length - 1].parts.map(
-        (part, i) =>
-          part.type === "text" && (
-            <div
-              data-testid="message-content"
-              key={i}
-              className={cn("flex flex-col gap-4")}
-            >
-              <Markdown>{sanitizeText(part.text)}</Markdown>
-            </div>
-          )
-      )} */}
 
       {authError && (
         <div className="w-full mx-auto max-w-3xl px-4">
@@ -87,9 +87,22 @@ function PureMessages({
         messages.length > 0 &&
         messages[messages.length - 1].role === "user" && <ThinkingMessage />}
 
+      <Button
+        variant="outline"
+        size="icon"
+        className={cn(
+          "sticky bottom-56 rounded-full shadow-2xl mx-auto transition-all border-indigo-200 text-indigo-700",
+          isAtBottom ? "opacity-0 pointer-events-none" : "opacity-100"
+        )}
+        onClick={() => scrollToBottom()}
+      >
+        <ArrowDown />
+      </Button>
+
       <motion.div
         ref={messagesEndRef}
-        className="shrink-0 min-w-[24px] min-h-[24px]"
+        className="absolute -bottom-32 shrink-0 min-w-[24px] min-h-[24px]"
+        aria-hidden
         onViewportLeave={onViewportLeave}
         onViewportEnter={onViewportEnter}
       />
