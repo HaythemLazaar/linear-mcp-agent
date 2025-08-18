@@ -5,10 +5,11 @@ import equal from "fast-deep-equal";
 import type { UseChatHelpers } from "@ai-sdk/react";
 import { motion } from "framer-motion";
 import { useMessages } from "@/hooks/use-messages";
-import { cn, sanitizeText } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { LinearAuth } from "./linear-auth";
 import { Alert, AlertDescription } from "./ui/alert";
-import { Markdown } from "./markdown";
+import { Button } from "./ui/button";
+import { ArrowDown } from "lucide-react";
 
 interface MessagesProps {
   chatId: string;
@@ -32,7 +33,9 @@ function PureMessages({
     endRef: messagesEndRef,
     onViewportEnter,
     onViewportLeave,
+    scrollToBottom,
     hasSentMessage,
+    isAtBottom,
   } = useMessages({
     chatId,
     status,
@@ -60,19 +63,6 @@ function PureMessages({
         />
       ))}
 
-      {/* {messages[messages.length - 1].parts.map(
-        (part, i) =>
-          part.type === "text" && (
-            <div
-              data-testid="message-content"
-              key={i}
-              className={cn("flex flex-col gap-4")}
-            >
-              <Markdown>{sanitizeText(part.text)}</Markdown>
-            </div>
-          )
-      )} */}
-
       {authError && (
         <div className="w-full mx-auto max-w-3xl px-4">
           <Alert>
@@ -86,6 +76,18 @@ function PureMessages({
       {status === "submitted" &&
         messages.length > 0 &&
         messages[messages.length - 1].role === "user" && <ThinkingMessage />}
+
+      <Button
+        variant="outline"
+        size="icon"
+        className={cn(
+          "sticky bottom-56 rounded-full shadow-2xl mx-auto transition-all border-indigo-200 text-indigo-700",
+          isAtBottom ? "opacity-0 absolute" : "opacity-100"
+        )}
+        onClick={() => scrollToBottom()}
+      >
+        <ArrowDown />
+      </Button>
 
       <motion.div
         ref={messagesEndRef}
