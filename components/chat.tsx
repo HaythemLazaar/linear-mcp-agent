@@ -13,6 +13,7 @@ import { useRouter } from "next/navigation";
 import { Suggestions } from "./suggestions";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
+import { authClient } from "@/lib/auth-client";
 
 export function Chat({
   id,
@@ -22,7 +23,7 @@ export function Chat({
   initialMessages?: Array<UIMessage>;
 }) {
   const queryClient = useQueryClient();
-  const { user, loading, checkAuth } = useAuth();
+  const { data: session } = authClient.useSession();
   const [authError, setAuthError] = useState<string | null>(null);
   const { refresh, replace } = useRouter();
   const { team, project } = useLinearObjects();
@@ -57,12 +58,10 @@ export function Chat({
       },
       onFinish: async () => {
         if (!initialMessages) {
-          await checkAuth().then(() => {
-            queryClient.invalidateQueries({
-              queryKey: ["threads", user?.id],
-            });
-            replace(`/chat/${id}`);
+          queryClient.invalidateQueries({
+            queryKey: ["threads", session?.user?.id],
           });
+          replace(`/chat/${id}`);
         }
       },
     });
