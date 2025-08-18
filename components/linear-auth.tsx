@@ -124,6 +124,7 @@ export function LinearAuth({ onAuthSuccess, onAuthError }: LinearAuthProps) {
             className="text-xs font-semibold text-neutral-500"
             onClick={handleLogin}
             disabled={isLoading}
+            type="button"
           >
             Connect
           </button>
@@ -132,6 +133,7 @@ export function LinearAuth({ onAuthSuccess, onAuthError }: LinearAuthProps) {
             className="text-xs font-semibold text-neutral-500"
             onClick={handleLogout}
             disabled={isLoading}
+            type="button"
           >
             Disconnect
           </button>

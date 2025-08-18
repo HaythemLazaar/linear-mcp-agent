@@ -15,23 +15,29 @@ export interface AuthResult {
 }
 
 export class ServerMCPAuth {
+  private static readonly DEPLOYED_URL =
+    process.env.PUBLIC_URL ??
+    process.env.VERCEL_PROJECT_PRODUCTION_URL ??
+    process.env.VERCEL_URL ??
+    undefined;
+  private static readonly BASE_URL = !!this.DEPLOYED_URL
+    ? "https://" + this.DEPLOYED_URL
+    : "http://localhost:3000";
   private static readonly LINEAR_MCP_SERVER_URL = "https://mcp.linear.app/mcp";
   private static readonly LINEAR_MCP_CLIENT_NAME = "Linear MCP Server Client";
-  private static readonly LINEAR_MCP_CLIENT_URI =
-    process.env.NEXTAUTH_URL || "http://localhost:3000";
-  private static readonly LINEAR_MCP_CALLBACK_URL = `${process.env.NEXTAUTH_URL || "http://localhost:3000"}/api/auth/linear/callback`;
+  private static readonly LINEAR_MCP_CLIENT_URI = this.BASE_URL;
+  private static readonly LINEAR_MCP_CALLBACK_URL = `${this.BASE_URL}/api/auth/linear/callback`;
 
-  static async getProvider(request?: NextRequest): Promise<ServerOAuthClientProvider> {
-    return new ServerOAuthClientProvider(
-      this.LINEAR_MCP_SERVER_URL,
-      {
-        storageKeyPrefix: "linear-mcp-auth",
-        clientName: this.LINEAR_MCP_CLIENT_NAME,
-        clientUri: this.LINEAR_MCP_CLIENT_URI,
-        callbackUrl: this.LINEAR_MCP_CALLBACK_URL,
-        request,
-      }
-    );
+  static async getProvider(
+    request?: NextRequest
+  ): Promise<ServerOAuthClientProvider> {
+    return new ServerOAuthClientProvider(this.LINEAR_MCP_SERVER_URL, {
+      storageKeyPrefix: "linear-mcp-auth",
+      clientName: this.LINEAR_MCP_CLIENT_NAME,
+      clientUri: this.LINEAR_MCP_CLIENT_URI,
+      callbackUrl: this.LINEAR_MCP_CALLBACK_URL,
+      request,
+    });
   }
 
   /**
@@ -100,7 +106,7 @@ export class ServerMCPAuth {
     const error = searchParams.get("error");
     const errorDescription = searchParams.get("error_description");
 
-    const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
+    const baseUrl = this.BASE_URL;
 
     // Handle OAuth errors
     if (error) {
