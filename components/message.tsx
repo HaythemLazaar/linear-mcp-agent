@@ -57,7 +57,7 @@ export const PreviewMessage = ({
         >
           <div
             className={cn("flex flex-col gap-4 w-full", {
-              "min-h-96": message.role === "assistant" && requiresScrollPadding,
+              "min-h-[calc(100vh-25rem)]": message.role === "assistant" && requiresScrollPadding,
             })}
           >
             {attachmentsFromMessage.length > 0 && (
@@ -203,7 +203,7 @@ export const ThinkingMessage = () => {
   return (
     <motion.div
       data-testid="message-assistant-loading"
-      className="w-full mx-auto max-w-3xl px-4 group/message min-h-96"
+      className="w-full mx-auto max-w-3xl px-4 group/message min-h-[calc(100vh-25rem)]"
       initial={{ y: 5, opacity: 0 }}
       animate={{ y: 0, opacity: 1, transition: { delay: 1 } }}
       data-role={role}
