@@ -31,18 +31,35 @@ This is an AI agent built with [Mastra](https://mastra.io), the [Vercel AI SDK](
 - [Shadcn](https://ui.shadcn.com/) - The React & tailwind UI component library
 - [Mastra](https://mastra.ai) – The underlying framework for the self-operating agent.
 - [Vercel AI SDK](https://sdk.vercel.ai/docs) – For building the AI-powered chat interface.
+- [Prisma](https://www.prisma.io/docs) - Node.js and TypeScript ORM 
+- [Neon](https://neon.com/) - Serverless postgres platform
 
 ## Getting Started
 
 To get started, you can clone the repository and install the dependencies:
 
 ```bash
-git clone <your-repo-url>
-cd <your-repo-name>
+git clone https://github.com/HaythemLazaar/linear-mcp-agent
+cd linear-mcp-agent
 pnpm install
 ```
 
-You will also need to set up your environment variables. Copy the `.env.example` file to `.env` and fill in the required values.
+You will need to generate an `API_KEY` from google AI studio, as well as a `connectionString` from Neon.
+
+You will also need to set up your environment variables. Copy the `.env.example` file to `.env` and fill in the required values:
+
+```
+BETTER_AUTH_SECRET=
+GOOGLE_GENERATIVE_AI_API_KEY=
+DATABASE_URL=
+```
+
+After that, you have to migrate the schema:
+
+```bash
+pnpm db:migrate
+```
+
 
 Then, you can run the development server:
 
